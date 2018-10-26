@@ -24,20 +24,24 @@ import javax.inject.Inject
 private const val PREFS_GLOBAL = "global"
 private const val KEY_COMPLETED_ONBOARDING = "completed_onboarding"
 
-class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
+class MainActivity : AppCompatActivity(){
+        //, HasSupportFragmentInjector {
 
-    @Inject
+
+
+    /*@Inject
     lateinit var fragmentDispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> {
         return fragmentDispatchingAndroidInjector
-    }
+    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
+       //AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        // Checking if we should on-board the user the first time.
+        /*// Checking if we should on-board the user the first time.
         val prefs = getSharedPreferences(PREFS_GLOBAL, Context.MODE_PRIVATE)
         if (!prefs.getBoolean(KEY_COMPLETED_ONBOARDING, false)) {
             finish()
@@ -81,10 +85,10 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 R.id.item_export -> view_pager.currentItem = 3
             }
             false
-        }
+        }*/
     }
 
-    fun navigateToPage(pageId: Int) {
+    /*fun navigateToPage(pageId: Int) {
         view_pager.currentItem = pageId
     }
 
@@ -96,6 +100,6 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         override fun getItem(position: Int): Fragment {
             return fragmentList[position]
         }
-    }
+    }*/
 
 }

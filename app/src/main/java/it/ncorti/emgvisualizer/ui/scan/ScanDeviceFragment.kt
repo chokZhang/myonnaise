@@ -108,7 +108,7 @@ class ScanDeviceFragment : BaseFragment<ScanDeviceContract.Presenter>(), ScanDev
     }
 
     override fun navigateToControlDevice() {
-        (activity as MainActivity).navigateToPage(1)
+        //(activity as MainActivity).navigateToPage(1)
     }
 
     class DeviceAdapter(

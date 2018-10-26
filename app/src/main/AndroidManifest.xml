@@ -1,39 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="it.ncorti.emgvisualizer" >
+    package="it.ncorti.emgvisualizer">
 
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <uses-feature android:name="android.hardware.bluetooth_le"
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
         android:required="true" />
 
     <application
         android:name=".MyoApplication"
-        android:hardwareAccelerated="true"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/log"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
         android:supportsRtl="true"
+        android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-
+        <meta-data
+            android:name="com.baidu.speech.APP_ID"
+            android:value="14471942"/>
+        <meta-data
+            android:name="com.baidu.speech.API_KEY"
+            android:value="bQ5xAZhr7qtuYS7kvi7ywd9R" />
+        <meta-data
+            android:name="com.baidu.speech.SECRET_KEY"
+            android:value="dYSfoDCNsGROFxeWSLbrdkO0UUDvV9gV" />
         <activity
-            android:name="it.ncorti.emgvisualizer.ui.IntroActivity"
+            android:name=".ui.IntroActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
+
         </activity>
+        <activity android:name=".ui.DemoActivity" >
 
-        <activity
-            android:name="it.ncorti.emgvisualizer.ui.MainActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".ui.WelcomeActivity" >
+
+        </activity>
+        <activity android:name=".ui.LoginActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.VocieRecognizeActivity" />
+        <activity android:name=".ui.CommunicateActivity"></activity>
     </application>
 
 </manifest>

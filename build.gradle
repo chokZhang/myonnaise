@@ -4,7 +4,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath Libs.androidGradlePlugin
+        classpath 'com.android.tools.build:gradle:3.2.1'
         classpath Libs.kotlinGradlePlugin
         classpath Libs.androidMavenGradlePlugin
         classpath Libs.bintrayGradlePlugin

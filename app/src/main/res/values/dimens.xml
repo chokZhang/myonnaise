@@ -12,4 +12,11 @@
     <dimen name="content_keyline">@dimen/eighteen_grid_size</dimen>
     <dimen name="default_image_size">@dimen/ten_grid_size</dimen>
 
+    <dimen name="login_text_size">12sp</dimen>
+    <dimen name="log_name_size">25sp</dimen>
+
+    <dimen name="welcome_english">22sp</dimen>
+    <dimen name="welcome_chinese">14sp</dimen>
+    <dimen name="tiny">14sp</dimen>
+
 </resources>

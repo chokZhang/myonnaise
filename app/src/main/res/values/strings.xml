@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Myo EMG Visualizer</string>
+    <string name="app_name">妙手回声</string>
 
     <string name="no_myo_found">No Myo found!</string>
     <string name="first_do_a_scan">First, you need to find a Myo.\nPress the button to start a scan.</string>
@@ -57,5 +57,21 @@
     <string name="scan_failed">Scan Failed</string>
     <string name="scan_completed">Scan Completed!</string>
     <string name="start_a_streaming_nto_populate_the_graph">Start a streaming\nto populate the graph</string>
+
+    <string name="phone_num_hint">请输入手机号码（中国大陆）</string>
+    <string name="code_hint">请输入验证码</string>
+    <string name="get_code">获取验证码</string>
+    <string name="login_wechat">切换微信登陆</string>
+    <string name="login_button_text">登录</string>
+    <string name="appName">妙手回声</string>
+    <string name="welcome_english">Welcome</string>
+    <string name="welcome_chinese">欢迎使用双向手语交流系统</string>
+    <string name="startCommunicate">开始交流</string>
+    <string name="voiceRecognition">长按语音识别</string>
+    <string name="setting">设置</string>
+    <string name="about">关于</string>
+    <string name="to_return">返回</string>
+    <string name="hint_endiText">请在这里输入想发送的信息</string>
+    <string name="send">发送</string>
 
 </resources>
