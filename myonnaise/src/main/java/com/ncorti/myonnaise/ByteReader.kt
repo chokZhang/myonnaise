@@ -1,8 +1,10 @@
 package com.ncorti.myonnaise
 
 import android.bluetooth.BluetoothGattCharacteristic
+import android.util.Log
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.text.DecimalFormat
 
 /**
  * This class help you to read the byte line from Myo.
@@ -40,10 +42,24 @@ class ByteReader {
      * @param size Number of bytes to be read (usually 8 or 16)
      * @return A new array with read bytes
      */
-    fun getBytes(size: Int): FloatArray {
-        val result = FloatArray(size)
+    fun getBytes(size: Int): DoubleArray {
+        val result = DoubleArray(size)
         for (i in 0 until size)
-            result[i] = byteBuffer!!.get().toFloat()
+            result[i] = byteBuffer!!.get().toDouble()
+        return result
+    }
+    fun getShorts(size: Int,item:Float): DoubleArray {
+        var result = DoubleArray(size)
+        for (i in 0 until size)
+            result[i] =byteBuffer!!.short.toDouble()/item
+        return result
+    }
+    fun getmoreShorts(size: Int,item:Float,item2:Float): DoubleArray {
+        var result = DoubleArray(size)
+        for (i in 0 until size/2)
+            result[i] =byteBuffer!!.short.toDouble()/item
+        for (i in size/2 until size)
+            result[i] =byteBuffer!!.short.toDouble()/item2
         return result
     }
 }

@@ -3,6 +3,7 @@ package com.ncorti.myonnaise
 import android.bluetooth.*
 import android.content.Context
 import android.util.Log
+import android.util.Xml
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.processors.PublishProcessor
@@ -50,7 +51,7 @@ class Myo(private val device: BluetoothDevice) : BluetoothGattCallback() {
     // Subjects for publishing outside Connection Status, Control Status and the Data (Float Arrays).
     internal val connectionStatusSubject: BehaviorSubject<MyoStatus> = BehaviorSubject.createDefault(MyoStatus.DISCONNECTED)
     internal val controlStatusSubject: BehaviorSubject<MyoControlStatus> = BehaviorSubject.createDefault(MyoControlStatus.NOT_STREAMING)
-    internal val dataProcessor: PublishProcessor<FloatArray> = PublishProcessor.create()
+    internal val dataProcessor: PublishProcessor<DoubleArray> = PublishProcessor.create()
 
     internal var gatt: BluetoothGatt? = null
     private var byteReader = ByteReader()
@@ -63,7 +64,8 @@ class Myo(private val device: BluetoothDevice) : BluetoothGattCallback() {
     private var characteristicEmg1: BluetoothGattCharacteristic? = null
     private var characteristicEmg2: BluetoothGattCharacteristic? = null
     private var characteristicEmg3: BluetoothGattCharacteristic? = null
-
+    private var serviceImu:BluetoothGattService? = null
+    private var characteristicImu: BluetoothGattCharacteristic? = null
     // We are using two queues for writing and reading characteristics/descriptors.
     // Please note that we must always give precedence to the write.
     internal val writeQueue: LinkedList<BluetoothGattDescriptor> = LinkedList()
@@ -115,11 +117,12 @@ class Myo(private val device: BluetoothDevice) : BluetoothGattCallback() {
      * Data is delivered as a FloatArray of size [MYO_CHANNELS].
      * If frequency is set (!= 0) then sub-sampling is performed to achieve the desired frequency.
      */
-    fun dataFlowable(): Flowable<FloatArray> {
+    fun dataFlowable(): Flowable<DoubleArray> {
         return if (frequency == 0) {
             dataProcessor
         } else {
             dataProcessor.sample((1000 / frequency).toLong(), TimeUnit.MILLISECONDS)
+
         }
     }
 
@@ -163,6 +166,8 @@ class Myo(private val device: BluetoothDevice) : BluetoothGattCallback() {
         if (status != BluetoothGatt.GATT_SUCCESS) {
             return
         }
+
+
         // Find GATT Service EMG
         serviceEmg = gatt.getService(SERVICE_EMG_DATA_ID)
         serviceEmg?.apply {
@@ -170,7 +175,6 @@ class Myo(private val device: BluetoothDevice) : BluetoothGattCallback() {
             characteristicEmg1 = serviceEmg?.getCharacteristic(CHAR_EMG_1_ID)
             characteristicEmg2 = serviceEmg?.getCharacteristic(CHAR_EMG_2_ID)
             characteristicEmg3 = serviceEmg?.getCharacteristic(CHAR_EMG_3_ID)
-
             val emgCharacteristics = listOf(
                     characteristicEmg0,
                     characteristicEmg1,
@@ -189,7 +193,25 @@ class Myo(private val device: BluetoothDevice) : BluetoothGattCallback() {
                 }
             }
         }
+        // Find GATT Service IMU
 
+        serviceImu = gatt.getService(SERVICE_IMU_DATA_ID)
+        serviceImu?.apply {
+            characteristicImu = serviceImu?.getCharacteristic(CHAR_IMU_ID)
+            var imuCharacteristics = listOf(
+                    characteristicImu)
+            imuCharacteristics.forEach { imuCharacteristic ->
+                imuCharacteristic?.apply {
+                    if (gatt.setCharacteristicNotification(imuCharacteristic, true)) {
+                        val descriptor = imuCharacteristic.getDescriptor(CHAR_CLIENT_CONFIG)
+                        descriptor?.apply {
+                            descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                            writeDescriptor(gatt, descriptor)
+                        }
+                    }
+                }
+            }
+        }
         // Find GATT Service Control
         serviceControl = gatt.getService(SERVICE_CONTROL_ID)
         serviceControl?.apply {
@@ -260,17 +282,35 @@ class Myo(private val device: BluetoothDevice) : BluetoothGattCallback() {
     }
 
     override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
-        super.onCharacteristicChanged(gatt, characteristic)
 
+        super.onCharacteristicChanged(gatt, characteristic)
         if (characteristic.uuid.toString().endsWith(CHAR_EMG_POSTFIX)) {
             val emgData = characteristic.value
             byteReader.byteData = emgData
-
-            // We receive 16 bytes of data. Let's cut them in 2 and deliver both of them.
             dataProcessor.onNext(byteReader.getBytes(EMG_ARRAY_SIZE / 2))
-            dataProcessor.onNext(byteReader.getBytes(EMG_ARRAY_SIZE / 2))
+            //dataProcessor.onNext(byteReader.getBytes(EMG_ARRAY_SIZE / 2))
         }
+        else if (characteristic.uuid.toString().endsWith(CHAR_IMU_POSTFIX)) {
+            val imuData = characteristic.value
 
+            byteReader.byteData = imuData
+            /*
+            for (i in 0 until 4)
+            {
+                Log.d("Data ORIENT", " "+byteReader.short/MYOHW_ORIENTATION_SCALE)
+            }
+            for (i in 0 until 3)
+            {
+                Log.d("Data ACC", " "+byteReader.short/MYOHW_ACCELEROMETER_SCALE)
+            }
+            for (i in 0 until 3)
+            {
+                Log.d("Data GYRO", " "+byteReader.short/MYOHW_GYROSCOPE_SCALE)
+            }*/
+            byteReader.getShorts(IMU_ARRAY_SIZE+1, MYOHW_ORIENTATION_SCALE)
+            dataProcessor.onNext(byteReader.getmoreShorts(2*IMU_ARRAY_SIZE, MYOHW_ACCELEROMETER_SCALE,MYOHW_GYROSCOPE_SCALE))
+            //dataProcessor.onNext(byteReader.getmoreShorts(2*IMU_ARRAY_SIZE, MYOHW_ACCELEROMETER_SCALE,MYOHW_GYROSCOPE_SCALE))
+        }
         // Finally check if keep alive makes sense.
         val currentTimeMillis = System.currentTimeMillis()
         if (keepAlive && currentTimeMillis > lastKeepAlive + KEEP_ALIVE_INTERVAL_MS) {

@@ -28,7 +28,7 @@ class GraphPresenter(
                             view.startGraph(true)
                         }
                         .subscribe {
-                            view.showData(it)
+                            //view.showData(it)
                         }
             } else {
                 view.showNoStreamingMessage()

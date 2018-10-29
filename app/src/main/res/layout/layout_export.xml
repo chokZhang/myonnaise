@@ -2,15 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@drawable/background">
 
-    <TextView
+    <!--<TextView
         style="@style/TextAppearance.AppCompat.Subhead"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/default_margin"
         android:text="@string/export_points"
+        android:visibility="gone"
         android:textColor="@color/primaryColor" />
 
     <TextView
@@ -21,6 +23,7 @@
         android:layout_marginLeft="@dimen/default_margin"
         android:layout_marginRight="@dimen/default_margin"
         android:text="@string/zero"
+        android:visibility="gone"
         android:textColor="@color/primaryColor" />
 
     <TextView
@@ -30,6 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/default_margin"
         android:layout_marginEnd="@dimen/default_margin"
+        android:visibility="gone"
         android:text="@string/points_to_export" />
 
     <com.google.android.material.button.MaterialButton
@@ -50,6 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/default_margin"
         android:layout_marginRight="@dimen/default_margin"
+        android:visibility="gone"
         android:enabled="false"
         android:text="@string/reset" />
 
@@ -61,7 +66,7 @@
         android:layout_margin="@dimen/default_margin"
         android:text="@string/save_export"
         android:textColor="@color/primaryColor"
-        android:visibility="invisible" />
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/save_export_subtitle"
@@ -71,7 +76,7 @@
         android:layout_marginStart="@dimen/default_margin"
         android:layout_marginEnd="@dimen/default_margin"
         android:text="@string/save_info_message"
-        android:visibility="invisible" />
+        android:visibility="gone" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_share"
@@ -82,7 +87,7 @@
         android:layout_marginTop="@dimen/default_margin"
         android:layout_marginRight="@dimen/default_margin"
         android:text="@string/share"
-        android:visibility="invisible" />
+        android:visibility="gone" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_save"
@@ -92,5 +97,137 @@
         android:layout_marginLeft="@dimen/default_margin"
         android:layout_marginRight="@dimen/default_margin"
         android:text="@string/save"
-        android:visibility="invisible" />
+        android:visibility="gone" />-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/return_button"/>
+
+        <!--<TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/to_return"
+            android:layout_marginLeft="10dp"
+            android:textSize="@dimen/tiny"/>-->
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_weight="5"
+        android:background="@drawable/background_communicate"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:id="@+id/conversation_display_rv"
+            tools:listitem="@layout/conversation_message_item"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="5dp">
+
+        <ImageView
+            android:id="@+id/splider_middle"
+            android:paddingTop="8dp"
+            android:layout_width="2dp"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/splider"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:layout_toStartOf="@id/splider_middle">
+            <ImageView
+                android:id="@+id/startCommunicate_img"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="-5dp"
+                android:layout_centerInParent="true"
+                android:contentDescription="@string/startCommunicate"
+                android:scaleType="fitXY"
+                android:src="@drawable/myo_icon"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/startCommunicate_img"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="@string/startCommunicate"
+                android:textColor="@color/white"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/splider_middle">
+            <ImageView
+                android:id="@+id/recognize_img"
+                android:layout_width="35dp"
+                android:layout_height="40dp"
+                android:layout_centerInParent="true"
+                android:contentDescription="@string/voiceRecognition"
+                android:scaleType="fitXY"
+                android:src="@drawable/voice"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/recognize_img"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:textSize="@dimen/tiny"
+                android:text="@string/voiceRecognition"
+                android:textColor="@color/white"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/edit_conversation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/edit_communicate_shape"
+            android:hint="@string/hint_endiText"/>
+
+        <Button
+            android:id="@+id/send_conversation"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="7dp"
+            android:text="@string/send"
+            android:textColor="@color/white"
+            android:background="@drawable/button_communicate_shape"/>
+
+    </LinearLayout>
 </LinearLayout>

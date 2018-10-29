@@ -30,7 +30,7 @@ object CommandList {
         val command_data = 0x01.toByte()
         val payload_data = 3.toByte()
         val emg_mode = 0x02.toByte()
-        val imu_mode = 0x00.toByte()
+        val imu_mode = 0x01.toByte()
         val class_mode = 0x00.toByte()
         return byteArrayOf(command_data, payload_data, emg_mode, imu_mode, class_mode)
     }
@@ -40,7 +40,7 @@ object CommandList {
         val command_data = 0x01.toByte()
         val payload_data = 3.toByte()
         val emg_mode = 0x03.toByte()
-        val imu_mode = 0x00.toByte()
+        val imu_mode = 0x04.toByte()
         val class_mode = 0x00.toByte()
         return byteArrayOf(command_data, payload_data, emg_mode, imu_mode, class_mode)
     }

@@ -30,6 +30,8 @@ interface ExportContract {
         fun saveCsvFile(content: String)
 
         fun sharePlainText(content: String)
+
+        fun addSignText(content : String)
     }
 
     abstract class Presenter(override val view: BaseView) : BasePresenter<BaseView>(view) {

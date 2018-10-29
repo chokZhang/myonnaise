@@ -5,11 +5,11 @@ import it.ncorti.emgvisualizer.R;
 
 import android.os.Bundle;
 
-public class CommunicateActivity extends AppCompatActivity {
+public class ScanActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_communicate);
+        setContentView(R.layout.activity_scan);
     }
 }

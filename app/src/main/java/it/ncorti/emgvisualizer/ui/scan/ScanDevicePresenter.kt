@@ -7,6 +7,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import it.ncorti.emgvisualizer.dagger.DeviceManager
+import it.ncorti.emgvisualizer.ui.control.ControlDevicePresenter
 import it.ncorti.emgvisualizer.ui.model.Device
 import java.util.concurrent.TimeUnit
 
@@ -39,8 +40,8 @@ class ScanDevicePresenter(
         scanSubscription?.dispose()
         view.hideScanLoading()
     }
-
     override fun onScanToggleClicked() {
+
         if (scanSubscription?.isDisposed == false) {
             scanSubscription?.dispose()
             view.hideScanLoading()
@@ -76,6 +77,20 @@ class ScanDevicePresenter(
 
     override fun onDeviceSelected(index: Int) {
         deviceManager.selectedIndex = index
-        view.navigateToControlDevice()
+        if (deviceManager.selectedIndex == -1) {
+            return
+        }
+        else{
+            val selectedDevice = deviceManager.scannedDeviceList[deviceManager.selectedIndex]
+            if (deviceManager.myo == null) {
+                deviceManager.myo = myonnaise.getMyo(selectedDevice)
+            }
+            deviceManager.myo?.apply {
+                if (!this.isConnected()) {
+                    this.connect(myonnaise.context)
+                }
+            }
+
+        }
     }
 }

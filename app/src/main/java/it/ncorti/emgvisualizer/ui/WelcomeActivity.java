@@ -56,18 +56,20 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         switch (view.getId()){
             case R.id.button_about : {
                 //TODO 弹出关于界面
-
+                Intent intent = new Intent(WelcomeActivity.this, ScanActivity.class);
+                startActivity(intent);
                 break;
             }
             case R.id.button_setting : {
                 //TODO 弹出设置界面
-
+                Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
+                startActivity(intent);
                 break;
             }
             case R.id.startCommunicate_img : {
                 //弹出交流页面
                 Log.d(TAG, "onClick: click startCommunicate");
-                Intent intent = new Intent(WelcomeActivity.this, CommunicateActivity.class);
+                Intent intent = new Intent(WelcomeActivity.this, ConversationDisplayActivity.class);
                 startActivity(intent);
                 break;
             }

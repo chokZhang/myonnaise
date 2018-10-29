@@ -73,5 +73,10 @@
     <string name="to_return">返回</string>
     <string name="hint_endiText">请在这里输入想发送的信息</string>
     <string name="send">发送</string>
+    <string name="是">是</string>
+    <string name="否">否</string>
+    <string name="hint_sign_confirm">以上手语是否正确?</string>
+    <string name="hint_sign_recapture">是否重新采集手语</string>
+    <string name="text_edit_hint">请在这里输入想要发送的信息</string>
 
 </resources>
