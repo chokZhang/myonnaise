@@ -176,9 +176,9 @@ class ExportFragment : BaseFragment<ExportContract.Presenter>(), ExportContract.
         save_export_subtitle.visibility = View.VISIBLE*/
     }
 
-    override fun addSignText(content : String){
-        if(content.length > 0){
-            MessageManager.getInstance().buildSignMessage()
+    override fun addSignText(content : String?){
+        if(content != null){
+            MessageManager.getInstance().buildSignMessage(content)
         }
     }
 

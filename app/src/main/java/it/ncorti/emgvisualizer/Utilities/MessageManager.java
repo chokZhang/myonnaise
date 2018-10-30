@@ -69,9 +69,10 @@ public class MessageManager {
         return messages_list.size();
     }
 
-    public void buildSignMessage() {
+    public void buildSignMessage(String content) {
         new_added_msg = new SignMessage("正在识别手语中", 0);
         messages_list.add(new_added_msg);
+        new_added_msg.appendTextContent(content);
         noticeAllTargetMsgAdded();
     }
 
@@ -354,7 +355,7 @@ public class MessageManager {
     }
 
     public void sampleDisplayCreate(){
-        buildSignMessage();
+        buildSignMessage("");
         processSignMessageFeedback("医生 您好",2,1);
         processSignMessageFeedback("{\"control\":\"end_recognize\",\"sign_id\":2}");
         noticeAllTargetSignCaptureEnd();

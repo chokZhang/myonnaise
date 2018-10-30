@@ -57,7 +57,10 @@ class ExportPresenter(
     }
 
     override fun onCollectionTogglePressed() {
-
+        counter.set(0)
+        buffer.clear()
+        buffer2.clear()
+        buffer3.clear()
         deviceManager.myo?.apply {
             if (this.isStreaming()) {
                 if (dataSubscription == null || dataSubscription?.isDisposed == true) {
@@ -114,7 +117,7 @@ class ExportPresenter(
                         Log.d("exportPresent", "get in onSavePressed");
                         print(response)
                         //TODO 显示在recyclerview中
-                        view.addSignText("123");
+                        view.addSignText(response);
                     }
 
                     override fun onError(call: Call?, e: java.lang.Exception?, id: Int) {

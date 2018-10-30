@@ -2,9 +2,9 @@ package it.ncorti.emgvisualizer.ui
 
 import android.content.Context
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
@@ -16,43 +16,29 @@ import dagger.android.support.HasSupportFragmentInjector
 import it.ncorti.emgvisualizer.R
 import it.ncorti.emgvisualizer.ui.export.ExportFragment
 import it.ncorti.emgvisualizer.ui.scan.ScanDeviceFragment
-import it.ncorti.emgvisualizer.ui.control.ControlDeviceFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
-private const val PREFS_GLOBAL = "global"
-private const val KEY_COMPLETED_ONBOARDING = "completed_onboarding"
+class ScanActivity : MainActivity() {
 
-open class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
-    @Inject
-    lateinit var fragmentDispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
 
-    override fun supportFragmentInjector(): AndroidInjector<Fragment> {
-        return fragmentDispatchingAndroidInjector
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
-        // Checking if we should on-board the user the first time.
-        val prefs = getSharedPreferences(PREFS_GLOBAL, Context.MODE_PRIVATE)
-        if (!prefs.getBoolean(KEY_COMPLETED_ONBOARDING, false)) {
-            finish()
-            startActivity(Intent(this, IntroActivity::class.java))
-        }
 
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_scan)
         //setSupportActionBar(findViewById(R.id.new_toolbar))
 
         val fragmentList = listOf<Fragment>(
-                ScanDeviceFragment.newInstance(),
+                ScanDeviceFragment.newInstance()
                 //ControlDeviceFragment.newInstance(),
-                ExportFragment.newInstance()
+
         )
 
         view_pager.adapter = MyAdapter(supportFragmentManager, fragmentList)
-        view_pager.offscreenPageLimit = 2
+        view_pager.offscreenPageLimit = 1
         view_pager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             var prevMenuItem: MenuItem? = null
             override fun onPageScrollStateChanged(state: Int) {}
@@ -65,8 +51,8 @@ open class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 } else {
                     //bottom_navigation.menu.getItem(0).isChecked = false
                 }
-               // bottom_navigation.menu.getItem(position).isChecked = true
-               // prevMenuItem = bottom_navigation.menu.getItem(position)
+                // bottom_navigation.menu.getItem(position).isChecked = true
+                // prevMenuItem = bottom_navigation.menu.getItem(position)
             }
 
         })
@@ -81,18 +67,5 @@ open class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         }*/
     }
 
-    fun navigateToPage(pageId: Int) {
-        view_pager.currentItem = pageId
-    }
-
-    class MyAdapter(fm: FragmentManager, private val fragmentList: List<Fragment>) : FragmentPagerAdapter(fm) {
-        override fun getCount(): Int {
-            return fragmentList.size
-        }
-
-        override fun getItem(position: Int): Fragment {
-            return fragmentList[position]
-        }
-    }
 
 }
