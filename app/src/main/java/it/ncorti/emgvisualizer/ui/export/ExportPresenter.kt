@@ -57,6 +57,7 @@ class ExportPresenter(
     }
 
     override fun onCollectionTogglePressed() {
+
         counter.set(0)
         buffer.clear()
         buffer2.clear()
