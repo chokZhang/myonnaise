@@ -6,10 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.os.Bundle
-import android.os.Environment
-import android.os.Handler
-import android.os.Message
+import android.os.*
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,12 +15,18 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.iflytek.cloud.InitListener
+import com.iflytek.cloud.SpeechConstant
+import com.iflytek.cloud.SpeechRecognizer
+import com.iflytek.cloud.SpeechUtility
 import dagger.android.support.AndroidSupportInjection
 import it.ncorti.emgvisualizer.BaseFragment
 import it.ncorti.emgvisualizer.R
 import it.ncorti.emgvisualizer.Utilities.MessageManager
 import it.ncorti.emgvisualizer.Utilities.VoiceMessage
 import it.ncorti.emgvisualizer.adpter.ConversationMessagesRVAdapter
+import it.ncorti.emgvisualizer.recognize.MessageStatusRecogListener
+import it.ncorti.emgvisualizer.recognize.MyRecognizer
 import kotlinx.android.synthetic.main.layout_export.*
 import java.io.File
 import java.io.FileOutputStream
@@ -47,16 +50,13 @@ class ExportFragment : BaseFragment<ExportContract.Presenter>(), ExportContract.
 
     private val adapter : ConversationMessagesRVAdapter = ConversationMessagesRVAdapter(activity)
 
-    private var thread :Thread? = null
-    private var handler :Handler =object : Handler(){     //此处的object 要加，否则无法重写 handlerMessage
+    private val mHandler: Handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message?) {
             super.handleMessage(msg)
-            if(msg?.what == 0){
-
-            }
-
+            addVoiceText(msg?.obj.toString())
         }
     }
+
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -75,15 +75,15 @@ class ExportFragment : BaseFragment<ExportContract.Presenter>(), ExportContract.
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("createIt", "init")
+
         startCommunicate_img.setOnClickListener{
             if(!isClicked){
-                Log.d("createIt", "click")
-                exportPresenter.onCollectionTogglePressed()
+
+                exportPresenter.onConversationStart()
             }
             else {
-                Log.d("createIt", "clicked")
-                exportPresenter.onSavePressed()
+
+                exportPresenter.onConversationStop()
             }
             isClicked = !isClicked
         }
@@ -91,13 +91,19 @@ class ExportFragment : BaseFragment<ExportContract.Presenter>(), ExportContract.
         conversation_display_rv.adapter = adapter
         conversation_display_rv.layoutManager = LinearLayoutManager(activity)
 
+
         send_conversation.setOnClickListener {
             var content = edit_conversation.text.toString();
-            if(content.length > 0){
+            if(content.isNotEmpty()){
                 MessageManager.getInstance().buildTextMessage(content)
-                edit_conversation.text.clear()
             }
         }
+
+        SpeechUtility.createUtility(context, SpeechConstant.APPID +"=12345678")
+        val speechRecognizer = SpeechRecognizer.createRecognizer(context) { code -> Log.d("", "SpeechRecognizer init() code = $code") }
+        Log.d("abv", "onCreate: $speechRecognizer")
+
+
 
         MessageManager.getInstance().addNewNoticeTarget(object : MessageManager.NoticeMessageChanged {
 
@@ -124,56 +130,6 @@ class ExportFragment : BaseFragment<ExportContract.Presenter>(), ExportContract.
 
 
 
-        /*button_start_collecting.setOnClickListener { exportPresenter.onCollectionTogglePressed() }
-        button_reset_collecting.setOnClickListener { exportPresenter.onResetPressed() }
-        button_share.setOnClickListener { exportPresenter.onSharePressed() }
-        button_save.setOnClickListener { exportPresenter.onSavePressed() }*/
-    }
-
-    override fun enableStartCollectingButton() {
-        //button_start_collecting.isEnabled = true
-    }
-
-    override fun disableStartCollectingButton() {
-        //button_start_collecting.isEnabled = false
-    }
-
-    override fun showNotStreamingErrorMessage() {
-        Toast.makeText(activity, "You can't collect points if Myo is not streaming!", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun showCollectionStarted() {
-        //button_start_collecting?.text = getString(R.string.stop_collecting)
-    }
-
-    override fun showCollectionStopped() {
-        //button_start_collecting?.text = getString(R.string.start_collecting)
-    }
-
-    override fun showCollectedPoints(totalPoints: Int) {
-        //points_count.text = totalPoints.toString()
-    }
-
-    override fun enableResetButton() {
-        //button_reset_collecting.isEnabled = true
-    }
-
-    override fun disableResetButton() {
-        //button_reset_collecting.isEnabled = false
-    }
-
-    override fun hideSaveArea() {
-        /*button_save.visibility = View.INVISIBLE
-        button_share.visibility = View.INVISIBLE
-        save_export_title.visibility = View.INVISIBLE
-        save_export_subtitle.visibility = View.INVISIBLE*/
-    }
-
-    override fun showSaveArea() {
-        /*button_save.visibility = View.VISIBLE
-        button_share.visibility = View.VISIBLE
-        save_export_title.visibility = View.VISIBLE
-        save_export_subtitle.visibility = View.VISIBLE*/
     }
 
     override fun addSignText(content : String?){
@@ -182,12 +138,8 @@ class ExportFragment : BaseFragment<ExportContract.Presenter>(), ExportContract.
         }
     }
 
-    override fun sharePlainText(content: String) {
-        val sendIntent = Intent()
-        sendIntent.action = Intent.ACTION_SEND
-        sendIntent.putExtra(Intent.EXTRA_TEXT, content)
-        sendIntent.type = "text/plain"
-        startActivity(sendIntent)
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
     override fun saveCsvFile(content: String) {
@@ -203,7 +155,6 @@ class ExportFragment : BaseFragment<ExportContract.Presenter>(), ExportContract.
             }
         }
     }
-
 
     private fun writeToFile(content: String) {
         val storageDir =
@@ -226,5 +177,38 @@ class ExportFragment : BaseFragment<ExportContract.Presenter>(), ExportContract.
                 }
             }
         }
+    }
+
+    override fun showConversationPressed() {
+        //开始交流被按下后的视图改变
+    }
+
+    override fun showConversationReset() {
+        //开始交流的重置
+    }
+
+    override fun showSpeechPressed() {
+        //开始说话被按下
+    }
+
+    override fun showSpeechReset() {
+        //开始说话重置
+    }
+
+    override fun addVoiceText(content: String) {
+        //向对话框中添加一段语音信息
+    }
+
+    override fun addEditText(content: String) {
+        //将编辑框中的文字发送到对话框中
+    }
+
+    override fun cleanEditText(content: String) {
+        //清空对话框的内容
+        edit_conversation.text.clear()
+    }
+
+    override fun showNotStreamingErrorMessage() {
+        Toast.makeText(activity, "You can't collect points if Myo is not streaming!", Toast.LENGTH_SHORT).show()
     }
 }

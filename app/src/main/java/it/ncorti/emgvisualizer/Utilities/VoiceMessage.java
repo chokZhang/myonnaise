@@ -6,16 +6,19 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-/*import com.iflytek.cloud.RecognizerListener;
+import com.iflytek.cloud.RecognizerListener;
 import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
-import com.iflytek.cloud.SpeechRecognizer;*/
+import com.iflytek.cloud.SpeechRecognizer;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import it.ncorti.emgvisualizer.Utilities.ConversationMessage;
+import it.ncorti.emgvisualizer.Utilities.MessageManager;
 
 import static android.content.ContentValues.TAG;
 
@@ -26,34 +29,34 @@ import static android.content.ContentValues.TAG;
 
 public class VoiceMessage extends ConversationMessage {
 
-    /*private String voice_file_path;
+    private String voice_file_path;
 
     private StringBuilder result_buffer = new StringBuilder();
 
-    *//**
+    /**
      * 最大等待时间， 单位ms
-     *//*
+     */
     private int maxWaitTime = 500;
-    *//**
+    /**
      * 每次等待时间
-     *//*
+     */
     private static final int perWaitTime = 100;
-    *//**
+    /**
      * 出现异常时最多重复次数
-     *//*
-    private static final int maxQueueTimes = 3;*/
+     */
+    private static final int maxQueueTimes = 3;
 
 
 
     public VoiceMessage(int msg_id, String voice_file_path) {
         super(msg_id, ConversationMessage.VOICE, "正在识别语音");
-        //this.voice_file_path = voice_file_path;
+        this.voice_file_path = voice_file_path;
         Log.d(TAG, "VoiceMessage: building new msg voice path: " + voice_file_path);
-        //transVoice2Text();
+        transVoice2Text();
     }
 
 
-    /*private void transVoice2Text() {
+    private void transVoice2Text() {
         // 将这个函数放在asynctask里面用
         // 返回String后修改UI即可
         //在这里调用科大讯飞的api语音转文字
@@ -81,12 +84,15 @@ public class VoiceMessage extends ConversationMessage {
         }
     };
 
-    *//**
+    /**
      * 如果直接从音频文件识别，需要模拟真实的音速，防止音频队列的堵塞
      *
      * @throws InterruptedException sleep 方法
-     *//*
-    private void recognizePcmfileByte() {
+     */
+    private void recognizePcmfileByte()  throws Exception{
+        if (SpeechRecognizer.getRecognizer() == null)
+            Log.e(TAG, "recognizePcmfileByte: recognize is null" );
+
         // 1、读取音频文件
         FileInputStream fis = null;
         byte[] voice_buffer;
@@ -134,11 +140,13 @@ public class VoiceMessage extends ConversationMessage {
                     e.printStackTrace();
                 }
             }
+            Log.d(TAG, "recognizePcmfileByte: get out");
             recognizer.stopListening();
+            Log.d(TAG, "recognizePcmfileByte: finish");
 
             // 在原有的代码基础上主要添加了这个while代码等待音频解析完成，recognizer.isListening()返回true，
             // 说明解析工作还在进行
-*//*            while(recognizer.isListening()) {
+            /*while(recognizer.isListening()) {
                 if(maxWaitTime < 0) {
                     result_buffer.setLength(0);
                     Log.d(TAG, "recognizePcmfileByte: 解析超时！");
@@ -146,18 +154,18 @@ public class VoiceMessage extends ConversationMessage {
                 }
                 Thread.sleep(perWaitTime);
                 maxWaitTime -= perWaitTime;
-            }*//*
+            }*/
         }
     }
 
-    *//**
+    /**
      * 将字节缓冲区按照固定大小进行分割成数组
      *
      * @param buffer 缓冲区
      * @param length 缓冲区大小
      * @param spsize 切割块大小
      * @return
-     *//*
+     */
     private ArrayList<byte[]> splitBuffer(byte[] buffer, int length, int spsize) {
         ArrayList<byte[]> array = new ArrayList<>();
         if (spsize <= 0 || length <= 0 || buffer == null
@@ -201,6 +209,7 @@ public class VoiceMessage extends ConversationMessage {
         @Override
         public void onResult(RecognizerResult recognizerResult, boolean b) {
             result_buffer.append(recognizerResult.getResultString());
+            Log.d(TAG, "onResult: " + recognizerResult.getResultString());
             finish_handler.obtainMessage(0, result_buffer.toString())
                     .sendToTarget();
 
@@ -223,10 +232,12 @@ public class VoiceMessage extends ConversationMessage {
         @Override
         public void handleMessage(Message msg) {
             text_content = (String) msg.obj;
+            Log.d(TAG, "handleMessage: " + text_content);
             MessageManager.getInstance()
                     .noticeAllTargetMsgChange();
         }
     };
 
-*/
+
 }
+

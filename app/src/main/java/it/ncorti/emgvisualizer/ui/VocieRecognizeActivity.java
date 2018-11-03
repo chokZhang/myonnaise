@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import it.ncorti.emgvisualizer.R;
+import it.ncorti.emgvisualizer.recognize.ActivityAbstractRecog;
 import it.ncorti.emgvisualizer.recognize.AsrFinishJsonData;
 import it.ncorti.emgvisualizer.recognize.AsrPartialJsonData;
 
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class VocieRecognizeActivity extends AppCompatActivity implements EventListener {
+public class VocieRecognizeActivity extends /*AppCompatActivity implements EventListener*/ ActivityAbstractRecog {
 
     private static final String TAG = "VocieRecognizeActivity";
 
@@ -42,10 +43,16 @@ public class VocieRecognizeActivity extends AppCompatActivity implements EventLi
 
     private String final_result;
 
-    @Override
+    public VocieRecognizeActivity(){
+        super( false);
+    }
+
+
+
+    /*@Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_vocie_recognize);
+
+
 
         text_view = findViewById(R.id.text);
         button_rec = findViewById(R.id.button_rec);
@@ -74,13 +81,15 @@ public class VocieRecognizeActivity extends AppCompatActivity implements EventLi
     /**
      * android 6.0 以上需要动态申请权限
      */
-    private void initPermission() {
+    /*private void initPermission() {
         String[] permissions = {
                 Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.ACCESS_NETWORK_STATE,
                 Manifest.permission.INTERNET,
                 Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.MODIFY_AUDIO_SETTINGS
         };
 
         ArrayList<String> toApplyList = new ArrayList<String>();
@@ -104,18 +113,19 @@ public class VocieRecognizeActivity extends AppCompatActivity implements EventLi
         // 此处为android 6.0以上动态授权的回调，用户自行实现。
     }
 
-    /*
+    *//*
      * EventListener  回调方法
      * name:回调事件
      * params: JSON数据，其格式如下：
      *
-     * */
+     * *//*
     @Override
     public void onEvent(String name, String params, byte[] data, int offset, int length) {
         String result = "";
 
         if (length > 0 && data.length > 0) {
             //result += ", 语义解析结果：" + new String(data, offset, length);
+            Log.d(TAG, "onEvent: 语义解析结果：" + new String(data, offset, length));
         }
 
         if (name.equals(SpeechConstant.CALLBACK_EVENT_ASR_READY)) {
@@ -129,17 +139,17 @@ public class VocieRecognizeActivity extends AppCompatActivity implements EventLi
 
         } else if (name.equals(SpeechConstant.CALLBACK_EVENT_ASR_END)) {
             // 检测到用户的已经停止说话
-            /*result += "检测到用户的已经停止说话";
+            *//*result += "检测到用户的已经停止说话";
             if (params != null && !params.isEmpty()) {
                 result += "params :" + params + "\n";
-            }*/
+            }*//*
             Log.d(TAG, "onEvent: 检测到用户的已经停止说话");
         } else if (name.equals(SpeechConstant.CALLBACK_EVENT_ASR_PARTIAL)) {
             // 临时识别结果, 长语音模式需要从此消息中取出结果
-            /*result += "识别临时识别结果";
+            *//*result += "识别临时识别结果";
             if (params != null && !params.isEmpty()) {
                 result += "params :" + params + "\n";
-            }*/
+            }*//*
 //            Log.d(TAG, "Temp Params:"+params);
             Log.d(TAG, "onEvent: 临时识别结果");
             parseAsrPartialJsonData(params);
@@ -147,16 +157,18 @@ public class VocieRecognizeActivity extends AppCompatActivity implements EventLi
             // 识别结束， 最终识别结果或可能的错误
             //result += "识别结束";
             asr.send(SpeechConstant.ASR_STOP, null, null, 0, 0);
-           /* if (params != null && !params.isEmpty()) {
+           *//* if (params != null && !params.isEmpty()) {
                 result += "params :" + params + "\n";
-            }*/
+            }*//*
             Log.d(TAG, "Result Params:"+params);
+            Log.d(TAG, "onEvent: 识别结束");
             parseAsrFinishJsonData(params);
         }
         //printResult(result);
     }
 
     private void start() {
+        Log.d(TAG, "start: begin record");
         Map<String, Object> params = new LinkedHashMap<String, Object>();
         String event = null;
         event = SpeechConstant.ASR_START;
@@ -174,6 +186,7 @@ public class VocieRecognizeActivity extends AppCompatActivity implements EventLi
     }
 
     private void stop() {
+        Log.d(TAG, "stop: finish");
         asr.send(SpeechConstant.ASR_STOP, null, null, 0, 0);
     }
 
@@ -206,6 +219,7 @@ public class VocieRecognizeActivity extends AppCompatActivity implements EventLi
             //添加新句子
             //tvParseResult.setText("解析结果:" + final_result);
             text_view.append(final_result);
+            Log.e(TAG, "parseAsrFinishJsonData: final_result" + final_result );
 
         }else{
             String errorCode = "\n错误码:" + jsonData.getError();
@@ -216,7 +230,7 @@ public class VocieRecognizeActivity extends AppCompatActivity implements EventLi
             Snackbar.make(text_view, "解析错误,原因是:" + desc , Snackbar.LENGTH_LONG)
                     .show();
         }
-    }
+    }*/
 
 
 

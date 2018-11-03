@@ -7,42 +7,37 @@ import it.ncorti.emgvisualizer.BaseView
 interface ExportContract {
 
     interface View : BaseView {
-        fun enableStartCollectingButton()
 
-        fun disableStartCollectingButton()
+        fun showConversationPressed()
 
-        fun showNotStreamingErrorMessage()
+        fun showConversationReset()
 
-        fun showCollectionStarted()
+        fun showSpeechPressed()
 
-        fun showCollectionStopped()
+        fun showSpeechReset()
 
-        fun showCollectedPoints(totalPoints: Int)
+        fun addSignText(content : String?)
 
-        fun enableResetButton()
+        fun addVoiceText(content: String)
 
-        fun disableResetButton()
+        fun addEditText(content: String)
 
-        fun hideSaveArea()
-
-        fun showSaveArea()
+        fun cleanEditText(content: String)
 
         fun saveCsvFile(content: String)
 
-        fun sharePlainText(content: String)
-
-        fun addSignText(content : String?)
+        fun showNotStreamingErrorMessage()
     }
 
     abstract class Presenter(override val view: BaseView) : BasePresenter<BaseView>(view) {
 
-        abstract fun onCollectionTogglePressed()
+        abstract fun onConversationStart()
 
-        abstract fun onResetPressed()
+        abstract fun onConversationStop()
 
-        abstract fun onSavePressed()
+        abstract fun onSpeechStart()
 
-        abstract fun onSharePressed()
+        abstract fun onSpeechStop()
 
     }
 }

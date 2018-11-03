@@ -7,7 +7,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import it.ncorti.emgvisualizer.dagger.DeviceManager
-import it.ncorti.emgvisualizer.ui.control.ControlDevicePresenter
 import it.ncorti.emgvisualizer.ui.model.Device
 import java.util.concurrent.TimeUnit
 

@@ -19,6 +19,9 @@
             android:layout_marginTop="-20dp"
             android:layout_marginBottom="40dp"
             android:layout_centerInParent="true"
+            android:textColor="@color/white"
+            android:textSize="@dimen/log_name_size"
+            android:gravity="start"
             android:background="@drawable/background_textview"/>
 
         <Button

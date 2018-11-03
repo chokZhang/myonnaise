@@ -2,6 +2,7 @@ package it.ncorti.emgvisualizer.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import it.ncorti.emgvisualizer.R;
+import it.ncorti.emgvisualizer.Utilities.MessageManager;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import com.iflytek.cloud.InitListener;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechRecognizer;
+import com.iflytek.cloud.SpeechUtility;
 
 public class WelcomeActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -48,6 +54,18 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         button_about.setOnClickListener(this);
         img_voiceRecognize.setOnClickListener(this);
         img_communicate.setOnClickListener(this);
+
+        SpeechUtility.createUtility(getApplicationContext(), SpeechConstant.APPID +"=5bd96703");
+        SpeechRecognizer speechRecognizer
+                = SpeechRecognizer.createRecognizer(getApplicationContext(), new InitListener() {
+            @Override
+            public void onInit(int code) {
+                Log.d("onInit", "SpeechRecognizer init() code = " + code);
+            }
+        });
+        Log.d("oncreat", "onCreate: " + speechRecognizer);
+
+        //MessageManager.getInstance().initTTS(getApplicationContext());
 
     }
 

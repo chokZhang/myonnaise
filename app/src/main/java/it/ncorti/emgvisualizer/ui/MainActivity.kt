@@ -14,9 +14,10 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import it.ncorti.emgvisualizer.R
+import it.ncorti.emgvisualizer.recognize.MessageStatusRecogListener
+import it.ncorti.emgvisualizer.recognize.MyRecognizer
 import it.ncorti.emgvisualizer.ui.export.ExportFragment
 import it.ncorti.emgvisualizer.ui.scan.ScanDeviceFragment
-import it.ncorti.emgvisualizer.ui.control.ControlDeviceFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
@@ -42,11 +43,13 @@ open class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
             startActivity(Intent(this, IntroActivity::class.java))
         }
 
+
+
         setContentView(R.layout.activity_main)
         //setSupportActionBar(findViewById(R.id.new_toolbar))
 
         val fragmentList = listOf<Fragment>(
-                ScanDeviceFragment.newInstance(),
+                //ScanDeviceFragment.newInstance(),
                 //ControlDeviceFragment.newInstance(),
                 ExportFragment.newInstance()
         )
@@ -85,6 +88,7 @@ open class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         view_pager.currentItem = pageId
     }
 
+
     class MyAdapter(fm: FragmentManager, private val fragmentList: List<Fragment>) : FragmentPagerAdapter(fm) {
         override fun getCount(): Int {
             return fragmentList.size
@@ -94,5 +98,7 @@ open class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
             return fragmentList[position]
         }
     }
+
+
 
 }

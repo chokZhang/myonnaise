@@ -41,22 +41,21 @@ class ExportPresenter(
                 this.sendCommand(CommandList.emgFilteredOnly())
             }
         }
-        view.showCollectedPoints(counter.get())
         deviceManager.myo?.apply {
-            if (this.isStreaming()) {
-                view.enableStartCollectingButton()
-            } else {
-                view.disableStartCollectingButton()
+            if (!this.isStreaming()) {
+                //TODO
+                //view.disableStartCollectingButton()
+
             }
         }
     }
 
     override fun stop() {
         dataSubscription?.dispose()
-        view.showCollectionStopped()
+
     }
 
-    override fun onCollectionTogglePressed() {
+    override fun onConversationStart() {
 
         counter.set(0)
         buffer.clear()
@@ -69,8 +68,6 @@ class ExportPresenter(
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .doOnSubscribe {
-                                view.showCollectionStarted()
-                                view.disableResetButton()
                             }
                             .subscribe {
                                 if (it.size == 8)
@@ -81,13 +78,10 @@ class ExportPresenter(
                                     buffer2.add(result1)
                                     buffer3.add(result2)
                                 }
-                                view.showCollectedPoints(counter.incrementAndGet())
                             }
                 } else {
                     dataSubscription?.dispose()
-                    view.enableResetButton()
-                    view.showSaveArea()
-                    view.showCollectionStopped()
+
                 }
             } else {
                 view.showNotStreamingErrorMessage()
@@ -95,17 +89,8 @@ class ExportPresenter(
         }
     }
 
-    override fun onResetPressed() {
-        counter.set(0)
-        buffer.clear()
-        buffer2.clear()
-        buffer3.clear()
-        view.showCollectedPoints(0)
-        dataSubscription?.dispose()
-        view.hideSaveArea()
-        view.disableResetButton()
-    }
-    override fun onSavePressed() {
+
+    override fun onConversationStop() {
         // HttpThread(createCsv(buffer,""),createCsv(buffer2,""),createCsv(buffer2,"")).start()
         OkHttpUtils
                 .postString()
@@ -130,10 +115,12 @@ class ExportPresenter(
         view.saveCsvFile(createCsv(buffer3,"gyr\r\n"))
     }
 
-    override fun onSharePressed() {
-        view.sharePlainText(createCsv(buffer,"emg\r\n"))
-        view.sharePlainText(createCsv(buffer2,"acc\r\n"))
-        view.sharePlainText(createCsv(buffer3,"gyr\r\n"))
+    override fun onSpeechStart() {
+        //开始说话
+    }
+
+    override fun onSpeechStop() {
+        //停止说话
     }
 
     @VisibleForTesting
