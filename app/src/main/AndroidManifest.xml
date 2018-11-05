@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="it.ncorti.emgvisualizer">
+    package="com.mengyuan1998.finger_dancing">
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -17,7 +17,7 @@
         android:required="true" />
 
     <application
-        android:name=".MyoApplication"
+        android:name="com.mengyuan1998.finger_dancing.MyoApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@drawable/log"
@@ -37,24 +37,24 @@
             android:value="dYSfoDCNsGROFxeWSLbrdkO0UUDvV9gV" />
 
         <activity
-            android:name=".ui.IntroActivity"
+            android:name="com.mengyuan1998.finger_dancing.ui.IntroActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.MainActivity"
+            android:name="com.mengyuan1998.finger_dancing.ui.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"></activity>
-        <activity android:name=".ui.WelcomeActivity"></activity>
-        <activity android:name=".ui.LoginActivity">
+        <activity android:name="com.mengyuan1998.finger_dancing.ui.WelcomeActivity"></activity>
+        <activity android:name="com.mengyuan1998.finger_dancing.ui.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.VocieRecognizeActivity" />
-        <activity android:name=".ui.ConversationDisplayActivity" />
-        <activity android:name=".ui.ScanActivity"></activity>
+        <activity android:name="com.mengyuan1998.finger_dancing.ui.VocieRecognizeActivity" />
+        <activity android:name="com.mengyuan1998.finger_dancing.ui.ConversationDisplayActivity" />
+        <activity android:name="com.mengyuan1998.finger_dancing.ui.ScanActivity"></activity>
     </application>
 
 </manifest>

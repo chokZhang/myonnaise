@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/scan_fragment"
-        android:name="it.ncorti.emgvisualizer.ui.export.ExportFragment"/>
+        android:name="com.mengyuan1998.finger_dancing.ui.export.ExportFragment"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

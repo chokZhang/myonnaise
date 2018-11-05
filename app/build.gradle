@@ -7,7 +7,7 @@ apply from: '../jacoco.gradle'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "it.ncorti.emgvisualizer"
+        applicationId "com.mengyuan1998.finger_dancing"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 3
@@ -54,4 +54,5 @@ dependencies {
     implementation files('libs/com.baidu.tts_2.3.1.20170808_e39ea89.jar')
     implementation files('libs/Msc.jar')
     implementation files('libs/Sunflower.jar')
+    implementation 'me.codeboy.android:align-text-view:2.3.2'
 }
