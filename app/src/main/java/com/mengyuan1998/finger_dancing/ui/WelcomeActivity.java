@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 
@@ -42,6 +43,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         }
 
         setContentView(R.layout.activity_welcome);
+
+        /*WindowManager.LayoutParams localLayoutParams = getWindow().getAttributes();
+        localLayoutParams.flags = (WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | localLayoutParams.flags);*/
 
         button_about = findViewById(R.id.button_about);
         button_setting = findViewById(R.id.button_setting);
@@ -79,14 +83,14 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             }
             case R.id.button_setting : {
                 //TODO 弹出设置界面
-                Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
-                startActivity(intent);
+                /*Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
+                startActivity(intent);*/
                 break;
             }
             case R.id.startCommunicate_img : {
                 //弹出交流页面
                 Log.d(TAG, "onClick: click startCommunicate");
-                Intent intent = new Intent(WelcomeActivity.this, ConversationDisplayActivity.class);
+                Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
                 startActivity(intent);
                 break;
             }

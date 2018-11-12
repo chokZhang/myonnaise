@@ -8,6 +8,7 @@ import android.os.Message;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -51,6 +52,10 @@ public abstract class ActivityCommon extends AppCompatActivity {
         // setStrictMode();
         InFileStream.setContext(this);
         setContentView(layout);
+
+        /*WindowManager.LayoutParams localLayoutParams = getWindow().getAttributes();
+        localLayoutParams.flags = (WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | localLayoutParams.flags);*/
+
         initView();
         handler = new Handler() {
 

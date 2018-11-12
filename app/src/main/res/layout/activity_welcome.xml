@@ -55,8 +55,8 @@
             android:layout_toStartOf="@id/splider_middle">
             <ImageView
                 android:id="@+id/startCommunicate_img"
-                android:layout_width="90dp"
-                android:layout_height="108dp"
+                android:layout_width="94dp"
+                android:layout_height="114dp"
                 android:padding="20dp"
                 android:layout_centerInParent="true"
                 android:contentDescription="@string/startCommunicate"
@@ -67,6 +67,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/startCommunicate_img"
                 android:gravity="center"
+                android:textSize="@dimen/welcome_Chinese"
+                android:textStyle="bold"
                 android:text="@string/startCommunicate"
                 android:textColor="@color/white"/>
 
@@ -78,8 +80,8 @@
             android:layout_toEndOf="@id/splider_middle">
             <ImageView
                 android:id="@+id/recognize_img"
-                android:layout_width="81dp"
-                android:layout_height="108dp"
+                android:layout_width="93dp"
+                android:layout_height="112dp"
                 android:padding="20dp"
                 android:layout_centerInParent="true"
                 android:contentDescription="@string/voiceRecognition"
@@ -90,6 +92,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/recognize_img"
                 android:gravity="center"
+                android:textStyle="bold"
+                android:textSize="@dimen/welcome_Chinese"
                 android:text="@string/voiceRecognition"
                 android:textColor="@color/white"/>
 
@@ -97,38 +101,44 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-        <ImageView
-            android:id="@+id/splider_buttom"
-            android:layout_width="2dp"
-            android:layout_height="21dp"
-            android:layout_centerInParent="true"
-            android:src="@drawable/split_board_left"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"/>
-        <Button
-            android:id="@+id/button_setting"
-            android:layout_width="40dp"
-            android:layout_height="14dp"
-            android:layout_toStartOf="@+id/splider_buttom"
-            android:layout_marginEnd="10dp"
-            android:layout_centerVertical="true"
-            android:scaleType="fitXY"
-            android:background="@drawable/button_setting"/>
+        <RelativeLayout
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/splider_buttom"
+                android:layout_width="2dp"
+                android:layout_height="21dp"
+                android:layout_centerInParent="true"
+                android:src="@drawable/split_board_left"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"/>
+            <Button
+                android:id="@+id/button_setting"
+                android:layout_width="50dp"
+                android:layout_height="17.5dp"
+                android:layout_toStartOf="@+id/splider_buttom"
+                android:layout_marginEnd="10dp"
+                android:layout_centerVertical="true"
+                android:scaleType="fitXY"
+                android:background="@drawable/button_setting"/>
 
-        <Button
-            android:id="@+id/button_about"
-            android:layout_toEndOf="@+id/splider_buttom"
-            android:layout_width="40dp"
-            android:layout_height="14dp"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="10dp"
-            android:scaleType="fitXY"
-            android:background="@drawable/button_about"/>
+            <Button
+                android:id="@+id/button_about"
+                android:layout_toEndOf="@+id/splider_buttom"
+                android:layout_width="50dp"
+                android:layout_height="17.5dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:scaleType="fitXY"
+                android:background="@drawable/button_about"/>
 
-    </RelativeLayout>
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

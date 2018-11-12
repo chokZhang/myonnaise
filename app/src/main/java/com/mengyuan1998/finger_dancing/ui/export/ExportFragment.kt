@@ -18,6 +18,8 @@ import com.iflytek.cloud.SpeechRecognizer
 import com.iflytek.cloud.SpeechUtility
 import dagger.android.support.AndroidSupportInjection
 import com.mengyuan1998.finger_dancing.R
+import com.mengyuan1998.finger_dancing.Utilities.SoftKeyBoardListener
+import com.mengyuan1998.finger_dancing.adpter.ConversationMessagesRVAdapter
 import kotlinx.android.synthetic.main.layout_export.*
 import java.io.File
 import java.io.FileOutputStream
@@ -39,7 +41,8 @@ class ExportFragment : com.mengyuan1998.finger_dancing.BaseFragment<ExportContra
 
     private var isClicked : Boolean = false
 
-    private val adapter : com.mengyuan1998.finger_dancing.adpter.ConversationMessagesRVAdapter = com.mengyuan1998.finger_dancing.adpter.ConversationMessagesRVAdapter(activity)
+
+    private val adapter : ConversationMessagesRVAdapter = ConversationMessagesRVAdapter(activity)
 
     private val mHandler: Handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message?) {
@@ -59,6 +62,18 @@ class ExportFragment : com.mengyuan1998.finger_dancing.BaseFragment<ExportContra
         Log.d("createIt", "index")
         val root = inflater.inflate(R.layout.layout_export, container, false)
 
+        //键盘弹出事件监听
+        SoftKeyBoardListener.setListener(activity, object : SoftKeyBoardListener.OnSoftKeyBoardChangeListener{
+            override fun keyBoardShow(height: Int) {
+                //弹出
+                disImg()
+            }
+
+            override fun keyBoardHide(height: Int) {
+                //消失
+                showImg()
+            }
+        })
         setHasOptionsMenu(true)
 
         return root
@@ -83,12 +98,15 @@ class ExportFragment : com.mengyuan1998.finger_dancing.BaseFragment<ExportContra
         conversation_display_rv.layoutManager = LinearLayoutManager(activity)
 
 
+
         send_conversation.setOnClickListener {
             var content = edit_conversation.text.toString();
             if(content.isNotEmpty()){
                 com.mengyuan1998.finger_dancing.Utilities.MessageManager.getInstance().buildTextMessage(content)
             }
         }
+
+
 
         SpeechUtility.createUtility(context, SpeechConstant.APPID +"=12345678")
         val speechRecognizer = SpeechRecognizer.createRecognizer(context) { code -> Log.d("", "SpeechRecognizer init() code = $code") }
@@ -151,7 +169,7 @@ class ExportFragment : com.mengyuan1998.finger_dancing.BaseFragment<ExportContra
         val storageDir =
                 File("${Environment.getExternalStorageDirectory().absolutePath}/myo_emg")
         storageDir.mkdir()
-        val outfile = File(storageDir, "myo_emg_export_${System.currentTimeMillis()}.csv")
+        val outfile = File(storageDir, "myo_emg_export_${System.currentTimeMillis()}.txt")
         val fileOutputStream = FileOutputStream(outfile)
         fileOutputStream.write(content.toByteArray())
         fileOutputStream.close()
@@ -201,5 +219,13 @@ class ExportFragment : com.mengyuan1998.finger_dancing.BaseFragment<ExportContra
 
     override fun showNotStreamingErrorMessage() {
         Toast.makeText(activity, "You can't collect points if Myo is not streaming!", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun showImg() {
+        control_layout.visibility = View.VISIBLE
+    }
+
+    override fun disImg() {
+        control_layout.visibility = View.INVISIBLE
     }
 }

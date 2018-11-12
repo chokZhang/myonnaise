@@ -1,11 +1,22 @@
 package com.mengyuan1998.finger_dancing.Utilities;
 
+import android.content.Context;
 import android.util.Log;
 
+
+import com.baidu.tts.chainofresponsibility.logger.LoggerProxy;
+import com.baidu.tts.client.SpeechSynthesizer;
+import com.baidu.tts.client.TtsMode;
+import com.mengyuan1998.finger_dancing.Utilities.baidu_tts.InitConfig;
+import com.mengyuan1998.finger_dancing.Utilities.baidu_tts.MySynthesizer;
+import com.mengyuan1998.finger_dancing.Utilities.baidu_tts.NonBlockSynthesizer;
+import com.mengyuan1998.finger_dancing.Utilities.baidu_tts.OfflineResource;
+import com.mengyuan1998.finger_dancing.Utilities.baidu_tts.TTSMassageListener;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -24,20 +35,23 @@ import static android.content.ContentValues.TAG;
 public class MessageManager {
     private static MessageManager instance = new MessageManager();
     // 离线发音选择，VOICE_FEMALE即为离线女声发音。
-    //protected String offlineVoice = OfflineResource.VOICE_MALE;
+    protected String offlineVoice = OfflineResource.VOICE_MALE;
     private List<ConversationMessage> messages_list;
     private List<NoticeMessageChanged> notice_list = new ArrayList<>();
     private Map<Integer, SignMessage> sign_message_map = new Hashtable<>();
     private boolean capture_state = false;
-    private String appId = "11138165";
+    /*private String appId = "11138165";
     private String appKey = "atDLVSr4NFmDNPxPWHxWnPVS";
-    private String secretKey = "20da52346b042869be7cda3f8fb12cf5";
-    // TtsMode.MIX; 离在线融合，在线优先； TtsMode.ONLINE 纯在线； 没有纯离线
-   /* private TtsMode ttsMode = TtsMode.MIX;
+    private String secretKey = "20da52346b042869be7cda3f8fb12cf5";*/
+    private String appId = "14471942";
+    private String appKey = "bQ5xAZhr7qtuYS7kvi7ywd9R";
+    private String secretKey = "dYSfoDCNsGROFxeWSLbrdkO0UUDvV9gV";
+    //TtsMode.MIX; 离在线融合，在线优先； TtsMode.ONLINE 纯在线； 没有纯离线
+    private TtsMode ttsMode = TtsMode.MIX;
     private OfflineResource offlineResource = null;
 
     private MySynthesizer synthesizer = null;
-    private TTSMassageListener synthesizerListener = new TTSMassageListener();*/
+    private TTSMassageListener synthesizerListener = new TTSMassageListener();
 
 
     /**
@@ -85,7 +99,7 @@ public class MessageManager {
         return new_msg;
     }
 
-    public void processSignMessageFeedback(String feedback_json) {
+    /*public void processSignMessageFeedback(String feedback_json) {
         try {
             JSONObject jsonObject = new JSONObject(feedback_json);
             String control_info = jsonObject.getString("control");
@@ -106,7 +120,7 @@ public class MessageManager {
             Log.e(TAG, "buildSignMessage:  error: " + ee);
             ee.printStackTrace();
         }
-    }
+    }*/
 
     /**
      * 当返回一条手语识别的消息调用后 更新一个手语消息的实例
@@ -134,7 +148,7 @@ public class MessageManager {
         noticeAllTargetMsgChange();
     }
 
-    /*public void initTTS(Context context) {
+    public void initTTS(Context context) {
         try {
             LoggerProxy.printable(true); // 日志打印在logcat中
             // 设置初始化参数
@@ -152,14 +166,14 @@ public class MessageManager {
 
     public void releaseTTS() {
         synthesizer.release();
-    }*/
+    }
 
     /**
      * 合成的参数，可以初始化时填写，也可以在合成前设置。
      *
      * @return
      */
-    /*private Map<String, String> initTTSParams() {
+    private Map<String, String> initTTSParams() {
         Map<String, String> params = new HashMap<String, String>();
         // 以下参数均为选填
         // 设置在线发声音人： 0 普通女声（默认） 1 普通男声 2 特别男声 3 情感男声<度逍遥> 4 情感儿童声<度丫丫>
@@ -185,12 +199,13 @@ public class MessageManager {
         params.put(SpeechSynthesizer.PARAM_TTS_SPEECH_MODEL_FILE,
                 offlineResource.getModelFilename());
         return params;
-    }*/
+    }
 
 
 
-    private void synthesizeVoice(String voice_str) {
-        //synthesizer.speak(voice_str);
+    public void synthesizeVoice(String voice_str) {
+        synthesizer.speak(voice_str);
+        Log.d(TAG, "synthesizeVoice: speech " + voice_str);
     }
 
 
@@ -352,7 +367,7 @@ public class MessageManager {
     public void sampleDisplayCreate(){
         buildSignMessage("");
         processSignMessageFeedback("医生 您好",2,1);
-        processSignMessageFeedback("{\"control\":\"end_recognize\",\"sign_id\":2}");
+        //processSignMessageFeedback("{\"control\":\"end_recognize\",\"sign_id\":2}");
         noticeAllTargetSignCaptureEnd();
 
         VoiceMessage v = buildVoiceMessage("");

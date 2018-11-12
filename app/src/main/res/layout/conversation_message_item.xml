@@ -32,7 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:inputType="none"
+
                 android:background="@drawable/bubble_box"
                 android:gravity="start"
                 android:text="啊啊啊啊啊"

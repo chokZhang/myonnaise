@@ -93,25 +93,24 @@ class ExportPresenter(
         // HttpThread(createCsv(buffer,""),createCsv(buffer2,""),createCsv(buffer2,"")).start()
         OkHttpUtils
                 .postString()
-                .url("https://www.chekehome.com/public/index.php/helpfuc")
+                .url("http://47.94.223.152:80")
                 .content(Gson().toJson(Httpdata(createCsv(buffer,""), createCsv(buffer2,""),createCsv(buffer2,""))))
                 .mediaType(MediaType.parse("application/json; charset=utf-8"))
                 .build()
                 .execute(object : StringCallback() {
                     override fun onResponse(response: String?, id: Int) {
-                        Log.d("exportPresent", "get in onSavePressed");
-                        print(response)
+                        Log.d("exportPresent", "response");
+
                         //TODO 显示在recyclerview中
                         view.addSignText(response);
                     }
 
                     override fun onError(call: Call?, e: java.lang.Exception?, id: Int) {
+                        Log.d("exportPresent", e.toString());
                         print(e.toString())
                     }
                 })
-        view.saveCsvFile(createCsv(buffer,"emg\r\n"))
-        view.saveCsvFile(createCsv(buffer2,"acc\r\n"))
-        view.saveCsvFile(createCsv(buffer3,"gyr\r\n"))
+
     }
 
     override fun onSpeechStart() {

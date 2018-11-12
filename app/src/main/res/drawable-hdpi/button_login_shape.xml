@@ -5,8 +5,8 @@
     //设置button的颜色
     <gradient
         android:angle="45"
-        android:endColor="@color/primaryLightColor"
-        android:startColor="@color/primaryDarkColor" />
+        android:endColor="@color/primaryColor"
+        android:startColor="@color/colorPrimary" />
     //设置button的大小
     <size
         android:height="60dp"

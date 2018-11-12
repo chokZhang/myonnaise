@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:background="@drawable/background">
+    android:background="@drawable/welcome_background">
 
     <!--<TextView
         style="@style/TextAppearance.AppCompat.Subhead"
@@ -105,8 +105,9 @@
         android:layout_marginTop="5dp"
         android:orientation="horizontal">
         <ImageView
-            android:layout_width="15dp"
-            android:layout_height="20dp"
+            android:id="@+id/conversation_display_return"
+            android:layout_width="11dp"
+            android:layout_height="15dp"
             android:layout_marginStart="10dp"
             android:src="@drawable/return_button"/>
 
@@ -122,10 +123,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="15dp"
         android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="-5dp"
         android:layout_weight="5"
         android:background="@drawable/background_communicate"
         android:orientation="vertical">
@@ -139,16 +140,20 @@
     </LinearLayout>
 
     <RelativeLayout
+        android:id="@+id/control_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:layout_marginEnd="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="-5dp"
         android:layout_marginBottom="5dp">
 
         <ImageView
             android:id="@+id/splider_middle"
-            android:paddingTop="8dp"
-            android:layout_width="2dp"
-            android:layout_height="40dp"
+            android:paddingTop="10dp"
+            android:layout_width="4dp"
+            android:layout_height="50dp"
             android:layout_centerInParent="true"
             android:src="@drawable/splider"/>
         <RelativeLayout
@@ -160,7 +165,7 @@
                 android:id="@+id/startCommunicate_img"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="-5dp"
+                android:layout_marginTop="-3dp"
                 android:layout_centerInParent="true"
                 android:contentDescription="@string/startCommunicate"
                 android:scaleType="fitXY"
@@ -171,6 +176,7 @@
                 android:layout_below="@+id/startCommunicate_img"
                 android:layout_marginTop="5dp"
                 android:gravity="center"
+                android:textSize="@dimen/tiny"
                 android:text="@string/startCommunicate"
                 android:textColor="@color/white"/>
 
@@ -182,7 +188,7 @@
             android:layout_toEndOf="@id/splider_middle">
             <com.mengyuan1998.finger_dancing.ui.button.VoiceRecordButton
                 android:id="@+id/recognize_img"
-                android:layout_width="35dp"
+                android:layout_width="30dp"
                 android:layout_height="40dp"
                 android:layout_centerInParent="true"
                 android:contentDescription="@string/voiceRecognition"
@@ -205,29 +211,34 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
         <EditText
             android:id="@+id/edit_conversation"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/communicate_edit_height"
             android:layout_weight="1"
-            android:layout_marginBottom="10dp"
-            android:layout_marginStart="20dp"
+            android:layout_marginBottom="7dp"
             android:background="@drawable/edit_communicate_shape"
+            android:textSize="@dimen/communicate_hint"
             android:hint="@string/hint_endiText"/>
 
         <Button
             android:id="@+id/send_conversation"
             android:layout_width="50dp"
             android:layout_height="25dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="15dp"
+            android:layout_marginStart="9dp"
             android:layout_marginBottom="7dp"
             android:text="@string/send"
+            android:textSize="@dimen/communicate_send"
             android:textColor="@color/white"
             android:background="@drawable/button_communicate_shape"/>
 
     </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="7dp" />
 </LinearLayout>

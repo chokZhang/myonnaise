@@ -5,6 +5,8 @@ import android.content.Context;
 import android.graphics.Color;
 
 
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 
@@ -24,6 +26,12 @@ import com.mengyuan1998.finger_dancing.Utilities.MessageManager;
 import com.mengyuan1998.finger_dancing.Utilities.SignMessage;
 import com.mengyuan1998.finger_dancing.Utilities.TextMessage;
 import com.mengyuan1998.finger_dancing.Utilities.VoiceMessage;
+import com.mengyuan1998.finger_dancing.Utilities.auto_complete.SimpleAutocompleteCallback;
+import com.mengyuan1998.finger_dancing.Utilities.auto_complete.SimplePolicy;
+import com.mengyuan1998.finger_dancing.Utilities.auto_complete.SimpleRecyclerViewPresenter;
+import com.otaliastudios.autocomplete.Autocomplete;
+import com.otaliastudios.autocomplete.AutocompleteCallback;
+
 import java.util.List;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -47,6 +55,9 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
 
     public ConversationMessagesRVAdapter(Context context) {
         this.context = context;
+        if(context == null)
+            Log.d(TAG, "ConversationMessagesRVAdapter: oh noooooooooo");
+        Log.d(TAG, "ConversationMessagesRVAdapter: start");
         updateMessageList();
     }
 
@@ -64,9 +75,12 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
                 msg_type_display;
         public EditText msg_content_receive;
 
+        public Context context2;
 
-        public MessagesItemViewHolder(View view) {
+
+        public MessagesItemViewHolder(View view, Context context2) {
             super(view);
+            this.context2 = context2;
             receive_msg_view = view.findViewById(R.id.message_receive_view);
             send_msg_view = view.findViewById(R.id.message_send_view);
             sign_confirm_dialog = view.findViewById(R.id.sign_confirm_dialog);
@@ -74,7 +88,7 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
 
             msg_content_receive = view.findViewById(R.id.msg_content_receive);
 
-            setAutocomplete(msg_content_receive, context);
+            //setAutocomplete(msg_content_receive, context);
 
             send_msg_content = view.findViewById(R.id.msg_content_send);
 
@@ -90,7 +104,7 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
 
         private void setAutocomplete(EditText textView, Context context){
             //TODO  添加自动补全
-            /*AutocompleteCallback temp = new SimpleAutocompleteCallback();
+            AutocompleteCallback temp = new SimpleAutocompleteCallback();
             Drawable backgroundDrawable = new ColorDrawable(Color.WHITE);
             float elevation = 6f;
             Autocomplete.on(textView)
@@ -99,7 +113,7 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
                     .with(elevation)
                     .with(backgroundDrawable)
                     .with(new SimpleRecyclerViewPresenter(context))
-                    .build();*/
+                    .build();
         }
 
     }
@@ -108,7 +122,7 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
     public MessagesItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.conversation_message_item, parent, false);
-        return new MessagesItemViewHolder(view);
+        return new MessagesItemViewHolder(view, parent.getContext());
     }
 
     @Override
@@ -173,7 +187,16 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
         switch (message.getSignFeedbackStatus()) {
             case SignMessage.INITIAL:
                 holder.receive_msg_view.setVisibility(View.VISIBLE);
+                if(context == null){
+                    Log.d(TAG, "setHolderViewByMsgState: it's null");
+                }
+                if(holder.context2 == null){
+                    Log.d(TAG, "setHolderViewByMsgState: it's null too");
+                }
+                Log.d(TAG, "setHolderViewByMsgState: " + message.getTextContent());
+                MessageManager.getInstance().synthesizeVoice(message.getTextContent());
                 holder.msg_content_receive.setText(message.getTextContent());
+
                 if (message.isCaptureComplete()) {
                     holder.sign_confirm_dialog.setVisibility(View.VISIBLE);
                     holder.sign_confirm_yes_button.setOnClickListener(new View.OnClickListener() {

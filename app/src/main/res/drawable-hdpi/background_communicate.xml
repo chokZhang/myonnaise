@@ -3,6 +3,6 @@
     //设置圆角
     <corners android:radius="18dp" />
     //设置颜色
-    <solid android:color="@color/grey_half" />
+    <solid android:color="@color/white_half" />
 
 </shape>

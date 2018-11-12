@@ -1,16 +1,23 @@
 package com.mengyuan1998.finger_dancing.ui
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.mengyuan1998.finger_dancing.R
+import com.mengyuan1998.finger_dancing.Utilities.MessageManager
 import com.mengyuan1998.finger_dancing.ui.export.ExportFragment
+import com.mengyuan1998.finger_dancing.ui.scan.ScanDeviceFragment
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -33,23 +40,27 @@ open class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
+        /*val localLayoutParams = window.attributes
+        localLayoutParams.flags = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or localLayoutParams.flags*/
+
         // Checking if we should on-board the user the first time.
-        val prefs = getSharedPreferences(PREFS_GLOBAL, Context.MODE_PRIVATE)
+        /*val prefs = getSharedPreferences(PREFS_GLOBAL, Context.MODE_PRIVATE)
         if (!prefs.getBoolean(KEY_COMPLETED_ONBOARDING, false)) {
             finish()
             startActivity(Intent(this, IntroActivity::class.java))
-        }
+        }*/
 
-
+        requestPermission()
 
         setContentView(R.layout.activity_main)
         //setSupportActionBar(findViewById(R.id.new_toolbar))
 
         val fragmentList = listOf<Fragment>(
-                //ScanDeviceFragment.newInstance(),
+                ScanDeviceFragment.newInstance(),
                 //ControlDeviceFragment.newInstance(),
                 ExportFragment.newInstance()
         )
+        MessageManager.getInstance().initTTS(applicationContext)
 
         view_pager.adapter = MyAdapter(supportFragmentManager, fragmentList)
         view_pager.offscreenPageLimit = 2
@@ -83,6 +94,19 @@ open class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
     fun navigateToPage(pageId: Int) {
         view_pager.currentItem = pageId
+    }
+
+    private fun requestPermission() {
+        val hasPermission = (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+                1)
+    }
+
+    override fun onDestroy() {
+        MessageManager.getInstance().releaseTTS()
+        super.onDestroy()
     }
 
 

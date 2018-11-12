@@ -7,12 +7,12 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@drawable/login_background"
+        android:background="@drawable/welcome_background"
         android:layout_weight="1">
         <ImageView
             android:id="@+id/log_main"
-            android:layout_width="140dp"
-            android:layout_height="140dp"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
             android:layout_centerInParent="true"
             android:src="@drawable/logo"/>
         <!--<TextView
@@ -35,13 +35,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
             android:layout_marginTop="24dp">
 
             <ImageView
                 android:id="@+id/log_phone"
-                android:layout_width="11dp"
+                android:layout_width="10dp"
                 android:layout_height="17dp"
                 android:layout_marginBottom="6dp"
                 android:layout_marginLeft="2dp"
@@ -60,26 +60,26 @@
                 android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textColorHint="@color/grey"
-                android:textSize="@dimen/login_text_size"/>
+                android:textSize="@dimen/login_hint_size"/>
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
             android:background="@color/grey"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="25dp">
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
+            android:layout_marginTop="27dp">
 
             <ImageView
                 android:id="@+id/code_log"
-                android:layout_width="11dp"
+                android:layout_width="12dp"
                 android:layout_height="17dp"
                 android:layout_marginBottom="6dp"
                 android:layout_marginStart="2dp"
@@ -100,11 +100,12 @@
                 android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textColorHint="@color/grey"
-                android:textSize="@dimen/login_text_size"/>
+                android:textSize="@dimen/login_hint_size"/>
             <TextView
                 android:id="@+id/iv_see_password"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
                 android:layout_marginTop="4dp"
                 android:text="@string/get_code"
                 android:textSize="@dimen/login_text_size"
@@ -114,17 +115,17 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1sp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_height="1dp"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
             android:background="@color/grey"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp">
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp">
             <Button
                 android:id="@+id/login_button"
                 android:layout_width="match_parent"
@@ -141,7 +142,7 @@
             android:orientation="horizontal"
             android:layout_marginTop="12dp"
             android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp">
+            android:layout_marginRight="60dp">
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -150,11 +151,13 @@
                 android:id="@+id/login_wechat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="3dp"
                 android:text="@string/login_wechat"
-
+                android:textSize="@dimen/login_wechat"
                 android:gravity="right"/>
             <ImageView
                 android:id="@+id/to_login_wechat"
+                android:layout_marginTop="3.5dp"
                 android:layout_width="10dp"
                 android:layout_height="15dp"
                 android:src="@drawable/row_right"/>

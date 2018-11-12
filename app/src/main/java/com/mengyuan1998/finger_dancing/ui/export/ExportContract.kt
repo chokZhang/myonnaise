@@ -27,6 +27,10 @@ interface ExportContract {
         fun saveCsvFile(content: String)
 
         fun showNotStreamingErrorMessage()
+
+        fun showImg()
+
+        fun disImg()
     }
 
     abstract class Presenter(override val view: com.mengyuan1998.finger_dancing.BaseView) : com.mengyuan1998.finger_dancing.BasePresenter<com.mengyuan1998.finger_dancing.BaseView>(view) {
@@ -39,5 +43,9 @@ interface ExportContract {
 
         abstract fun onSpeechStop()
 
+    }
+
+    interface ReturnListener{
+        fun getReturn()
     }
 }
