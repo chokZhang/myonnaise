@@ -93,8 +93,8 @@ class ExportPresenter(
         // HttpThread(createCsv(buffer,""),createCsv(buffer2,""),createCsv(buffer2,"")).start()
         OkHttpUtils
                 .postString()
-                .url("http://47.94.223.152:80")
-                .content(Gson().toJson(Httpdata(createCsv(buffer,""), createCsv(buffer2,""),createCsv(buffer2,""))))
+                .url("http://www.chekehome.com/public/index.php/helpfuc")
+                .content(Gson().toJson(Httpdata(createCsv(buffer,""), createCsv(buffer2,""),createCsv(buffer3,""))))
                 .mediaType(MediaType.parse("application/json; charset=utf-8"))
                 .build()
                 .execute(object : StringCallback() {

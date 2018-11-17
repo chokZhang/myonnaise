@@ -88,7 +88,7 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
 
             msg_content_receive = view.findViewById(R.id.msg_content_receive);
 
-            //setAutocomplete(msg_content_receive, context);
+            setAutocomplete(msg_content_receive, context);
 
             send_msg_content = view.findViewById(R.id.msg_content_send);
 

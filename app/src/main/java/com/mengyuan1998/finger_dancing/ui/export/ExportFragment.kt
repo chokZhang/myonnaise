@@ -42,7 +42,7 @@ class ExportFragment : com.mengyuan1998.finger_dancing.BaseFragment<ExportContra
     private var isClicked : Boolean = false
 
 
-    private val adapter : ConversationMessagesRVAdapter = ConversationMessagesRVAdapter(activity)
+    lateinit var adapter : ConversationMessagesRVAdapter
 
     private val mHandler: Handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message?) {
@@ -61,6 +61,8 @@ class ExportFragment : com.mengyuan1998.finger_dancing.BaseFragment<ExportContra
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         Log.d("createIt", "index")
         val root = inflater.inflate(R.layout.layout_export, container, false)
+
+        adapter =  ConversationMessagesRVAdapter(activity)
 
         //键盘弹出事件监听
         SoftKeyBoardListener.setListener(activity, object : SoftKeyBoardListener.OnSoftKeyBoardChangeListener{
