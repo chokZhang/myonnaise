@@ -1,24 +1,13 @@
 package com.mengyuan1998.finger_dancing.Utilities.auto_complete;
 
-import android.text.Spannable;
-import android.util.Log;
-
-
 
 /**
- * This class controls when to show or hide the popup window, and, in the first case,
- * what text should be passed to the popup.
+ * This interface controls when to show or hide the popup window, and, in the first case,
+ * what text should be passed to the popup {@link AutocompletePresenter}.
  *
+ * @see Autocomplete.SimplePolicy for the simplest possible implementation
  */
-public class SimplePolicy implements AutocompletePolicy {
-
-    //popup_show_status标识是否显示popup
-    private boolean popup_show_status = false;
-
-    private String content = "";
-
-    private static final String TAG = "SimplePolicy";
-
+public interface AutocompletePolicy {
 
     /**
      * Called to understand whether the popup should be shown. Some naive examples:
@@ -29,14 +18,7 @@ public class SimplePolicy implements AutocompletePolicy {
      * @param cursorPos the position of the cursor
      * @return true if popup should be shown
      */
-    public boolean shouldShowPopup(CharSequence text, int cursorPos) {
-        content = text.toString();
-        if(content.length() == 0 ||content.charAt(content.length() - 1) != '。')
-            popup_show_status = true;
-        else popup_show_status = false;
-        Log.i(TAG, "shouldShowPopup: popup_show_status is " + popup_show_status + " text is " + text);
-        return popup_show_status;
-    }
+    boolean shouldShowPopup(CharSequence text, int cursorPos);
 
     /**
      * Called to understand whether a currently shown popup should be closed, maybe
@@ -49,13 +31,10 @@ public class SimplePolicy implements AutocompletePolicy {
      * @param cursorPos the position of the cursor
      * @return true if popup should be hidden
      */
-    public boolean shouldDismissPopup(CharSequence text, int cursorPos) {
-
-        return !popup_show_status;
-    }
+    boolean shouldDismissPopup(CharSequence text, int cursorPos);
 
     /**
-     * Called to understand which query should be passed to AutocompletePresenter
+     * Called to understand which query should be passed to {@link AutocompletePresenter}
      * for a showing popup. If this is called, {@link #shouldShowPopup(CharSequence, int)} just returned
      * true, or {@link #shouldDismissPopup(CharSequence, int)} just returned false.
      *
@@ -69,13 +48,7 @@ public class SimplePolicy implements AutocompletePolicy {
      * @param text current text, along with its Spans
      * @return the query for presenter
      */
-    public CharSequence getQuery(CharSequence text) {
-        content = text.toString();
-        int index = content.lastIndexOf("。");
-        CharSequence queryContent = content.substring(index + 1, content.length());
-        Log.i(TAG, "getQuery: the text is " + queryContent);
-        return queryContent;
-    }
+    CharSequence getQuery(CharSequence text);
 
     /**
      * Called when popup is dismissed. This can be used, for instance, to clear custom Spans
@@ -83,8 +56,5 @@ public class SimplePolicy implements AutocompletePolicy {
      *
      * @param text text at the moment of dismissing
      */
-    public void onDismiss(CharSequence text) {
-
-    }
-
+    void onDismiss(CharSequence text);
 }

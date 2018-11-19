@@ -1,9 +1,8 @@
 package com.mengyuan1998.finger_dancing.Utilities.auto_complete;
 
-import android.text.Editable;
 import android.util.Log;
+import android.widget.TextView;
 
-import com.otaliastudios.autocomplete.AutocompleteCallback;
 
 /**
  * Created by boyzhang on 2018/10/1.
@@ -26,16 +25,21 @@ public class SimpleAutocompleteCallback implements AutocompleteCallback <String>
      * @param item item that was clicked
      * @return true if the action is valid and the popup can be dismissed
      */
-    public boolean onPopupItemClicked(Editable editable, String item) {
-        String content = editable.toString();
-        item = item + "。";
+    public boolean onPopupItemClicked(TextView editable, String item) {
+        //TODO 日后需要统一补全格式
+        String content = editable.getText().toString();
+        Log.d(TAG, "onPopupItemClicked: content is " + content);
         int index = content.lastIndexOf("。");
-        int length = content.length();
+        if(index != -1){
+            content = content.substring(0, index + 1);
+            Log.d(TAG, "onPopupItemClicked: index : " + index + "content is " + content);
+        }
+        else{
+            content = "";
+        }
+        content = content + item;
+        editable.setText(content);
 
-        String before = content.substring(index + 1, length);
-        editable.replace(index + 1, length, item);
-
-        Log.i(TAG, "onPopupItemClicked: change " + before + " to " + item);
         return true;
     }
 

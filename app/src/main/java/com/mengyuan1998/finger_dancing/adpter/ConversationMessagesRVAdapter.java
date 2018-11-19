@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,11 +25,12 @@ import com.mengyuan1998.finger_dancing.Utilities.MessageManager;
 import com.mengyuan1998.finger_dancing.Utilities.SignMessage;
 import com.mengyuan1998.finger_dancing.Utilities.TextMessage;
 import com.mengyuan1998.finger_dancing.Utilities.VoiceMessage;
+import com.mengyuan1998.finger_dancing.Utilities.auto_complete.Autocomplete;
+import com.mengyuan1998.finger_dancing.Utilities.auto_complete.AutocompleteCallback;
 import com.mengyuan1998.finger_dancing.Utilities.auto_complete.SimpleAutocompleteCallback;
 import com.mengyuan1998.finger_dancing.Utilities.auto_complete.SimplePolicy;
 import com.mengyuan1998.finger_dancing.Utilities.auto_complete.SimpleRecyclerViewPresenter;
-import com.otaliastudios.autocomplete.Autocomplete;
-import com.otaliastudios.autocomplete.AutocompleteCallback;
+
 
 import java.util.List;
 
@@ -58,6 +58,7 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
         if(context == null)
             Log.d(TAG, "ConversationMessagesRVAdapter: oh noooooooooo");
         Log.d(TAG, "ConversationMessagesRVAdapter: start");
+        Autocomplete.setHandler(main_thread_handler);
         updateMessageList();
     }
 
@@ -66,14 +67,14 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
     }
 
     static class MessagesItemViewHolder extends RecyclerView.ViewHolder {
-        public LinearLayout receive_msg_view, send_msg_view,
+        public LinearLayout receive_msg_view, send_msg_view,message_layout,
                 sign_confirm_dialog, sign_recapture_dialog;
 
         public TextView  send_msg_content,
                 sign_confirm_yes_button, sign_confirm_no_button,
                 sign_recapture_yes_button, sign_recapture_no_button,
                 msg_type_display;
-        public EditText msg_content_receive;
+        public TextView msg_content_receive;
 
         public Context context2;
 
@@ -81,6 +82,12 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
         public MessagesItemViewHolder(View view, Context context2) {
             super(view);
             this.context2 = context2;
+
+            //TODO 更改下结构
+            //这个对象只用于提供自动补全弹窗的宽度
+            message_layout = view.findViewById(R.id.message_layout);
+            Autocomplete.setWidthView(message_layout);
+
             receive_msg_view = view.findViewById(R.id.message_receive_view);
             send_msg_view = view.findViewById(R.id.message_send_view);
             sign_confirm_dialog = view.findViewById(R.id.sign_confirm_dialog);
@@ -102,7 +109,7 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
 
         }
 
-        private void setAutocomplete(EditText textView, Context context){
+        private void setAutocomplete(TextView textView, Context context){
             //TODO  添加自动补全
             AutocompleteCallback temp = new SimpleAutocompleteCallback();
             Drawable backgroundDrawable = new ColorDrawable(Color.WHITE);
@@ -187,15 +194,10 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
         switch (message.getSignFeedbackStatus()) {
             case SignMessage.INITIAL:
                 holder.receive_msg_view.setVisibility(View.VISIBLE);
-                if(context == null){
-                    Log.d(TAG, "setHolderViewByMsgState: it's null");
-                }
-                if(holder.context2 == null){
-                    Log.d(TAG, "setHolderViewByMsgState: it's null too");
-                }
-                Log.d(TAG, "setHolderViewByMsgState: " + message.getTextContent());
+
                 MessageManager.getInstance().synthesizeVoice(message.getTextContent());
                 holder.msg_content_receive.setText(message.getTextContent());
+
 
                 if (message.isCaptureComplete()) {
                     holder.sign_confirm_dialog.setVisibility(View.VISIBLE);
@@ -311,6 +313,7 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
 
     @SuppressLint("HandlerLeak")
     private Handler main_thread_handler = new Handler() {
+
         @Override
         public void handleMessage(Message msg) {
             Toast.makeText(context, "识别结果反馈成功", Toast.LENGTH_SHORT)

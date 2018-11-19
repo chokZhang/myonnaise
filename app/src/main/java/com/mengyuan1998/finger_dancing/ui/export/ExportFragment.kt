@@ -18,6 +18,7 @@ import com.iflytek.cloud.SpeechRecognizer
 import com.iflytek.cloud.SpeechUtility
 import dagger.android.support.AndroidSupportInjection
 import com.mengyuan1998.finger_dancing.R
+import com.mengyuan1998.finger_dancing.Utilities.MessageManager
 import com.mengyuan1998.finger_dancing.Utilities.SoftKeyBoardListener
 import com.mengyuan1998.finger_dancing.adpter.ConversationMessagesRVAdapter
 import kotlinx.android.synthetic.main.layout_export.*
@@ -104,7 +105,7 @@ class ExportFragment : com.mengyuan1998.finger_dancing.BaseFragment<ExportContra
         send_conversation.setOnClickListener {
             var content = edit_conversation.text.toString();
             if(content.isNotEmpty()){
-                com.mengyuan1998.finger_dancing.Utilities.MessageManager.getInstance().buildTextMessage(content)
+                MessageManager.getInstance().buildTextMessage(content)
             }
         }
 
@@ -116,11 +117,12 @@ class ExportFragment : com.mengyuan1998.finger_dancing.BaseFragment<ExportContra
 
 
 
-        com.mengyuan1998.finger_dancing.Utilities.MessageManager.getInstance().addNewNoticeTarget(object : com.mengyuan1998.finger_dancing.Utilities.MessageManager.NoticeMessageChanged {
+        MessageManager.getInstance().addNewNoticeTarget(object : MessageManager.NoticeMessageChanged {
 
             override fun onNewMessageAdd() {
                 adapter.updateMessageList()
-                adapter.notifyDataSetChanged()
+                //adapter.notifyDataSetChanged()
+                adapter.notifyItemInserted(adapter.itemCount - 1)
                 conversation_display_rv.scrollToPosition(adapter.getItemCount() - 1)
             }
 
@@ -145,7 +147,7 @@ class ExportFragment : com.mengyuan1998.finger_dancing.BaseFragment<ExportContra
 
     override fun addSignText(content : String?){
         if(content != null){
-            com.mengyuan1998.finger_dancing.Utilities.MessageManager.getInstance().buildSignMessage(content)
+            MessageManager.getInstance().buildSignMessage(content)
         }
     }
 
