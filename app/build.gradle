@@ -55,5 +55,6 @@ dependencies {
     implementation files('libs/Msc.jar')
     implementation files('libs/Sunflower.jar')
     implementation 'me.codeboy.android:align-text-view:2.3.2'
+    implementation 'com.facebook.fresco:fresco:1.11.0'
 
 }

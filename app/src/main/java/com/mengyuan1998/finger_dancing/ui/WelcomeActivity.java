@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -83,8 +84,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             }
             case R.id.button_setting : {
                 //TODO 弹出设置界面
-                /*Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
-                startActivity(intent);*/
+                Intent intent = new Intent(WelcomeActivity.this, InfoActivity.class);
+                startActivity(intent);
                 break;
             }
             case R.id.startCommunicate_img : {

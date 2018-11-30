@@ -56,7 +56,7 @@ open class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         //setSupportActionBar(findViewById(R.id.new_toolbar))
 
         val fragmentList = listOf<Fragment>(
-                //ScanDeviceFragment.newInstance(),
+                ScanDeviceFragment.newInstance(),
                 //ControlDeviceFragment.newInstance(),
                 ExportFragment.newInstance()
         )

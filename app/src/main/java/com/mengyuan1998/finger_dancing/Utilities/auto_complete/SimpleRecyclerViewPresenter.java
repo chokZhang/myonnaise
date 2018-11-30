@@ -39,6 +39,7 @@ public class SimpleRecyclerViewPresenter extends RecyclerViewPresenter<String> {
 
     @Override
     protected void onQuery(@Nullable CharSequence query) {
+        Log.d(TAG, "onQuery: query: " + query.toString());
         String queryContent = query.toString();
         String[] strs = queryContent.split(" ");
         //查询词的列表

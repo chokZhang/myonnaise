@@ -88,11 +88,18 @@ class ExportFragment : com.mengyuan1998.finger_dancing.BaseFragment<ExportContra
         startCommunicate_img.setOnClickListener{
             if(!isClicked){
 
+                System.out.println("exportPresent " + "click")
+
                 exportPresenter.onConversationStart()
+
+                showConversationPressed()
             }
             else {
+                System.out.println("exportPresent " + "clicked")
 
                 exportPresenter.onConversationStop()
+
+                showConversationReset()
             }
             isClicked = !isClicked
         }
@@ -194,10 +201,12 @@ class ExportFragment : com.mengyuan1998.finger_dancing.BaseFragment<ExportContra
 
     override fun showConversationPressed() {
         //开始交流被按下后的视图改变
+        startCommunicate_img.setImageResource(R.drawable.myo_icon_on)
     }
 
     override fun showConversationReset() {
         //开始交流的重置
+        startCommunicate_img.setImageResource(R.drawable.myo_icon)
     }
 
     override fun showSpeechPressed() {

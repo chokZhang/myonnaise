@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/welcome_background">
+
+    <FrameLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <RadioGroup
+        android:gravity="center"
+        android:id="@+id/rg_bottom_menu"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal">
+        <RadioButton
+            android:checked="true"
+            android:text="社区"
+            android:id="@+id/rb_community"
+            style="@style/RadioButtonStyle"
+            android:drawableTop="@drawable/bottom_community_selector"
+            />
+        <RadioButton
+            android:id="@+id/rb_search"
+            android:text="搜索"
+            style="@style/RadioButtonStyle"
+            android:drawableTop="@drawable/bottom_search_selector"
+            />
+        <RadioButton
+            android:text="信息"
+            android:id="@+id/rb_message"
+            style="@style/RadioButtonStyle"
+            android:drawableTop="@drawable/bottom_message_selector"
+            />
+        <RadioButton
+            android:text="个人"
+            android:id="@+id/rb_user"
+            style="@style/RadioButtonStyle"
+            android:drawableTop="@drawable/bottom_user_selector"
+            />
+
+    </RadioGroup>
+
+</RelativeLayout>

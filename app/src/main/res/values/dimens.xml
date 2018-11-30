@@ -24,5 +24,6 @@
     <dimen name="welcome_english">22sp</dimen>
     <dimen name="welcome_chinese">14sp</dimen>
     <dimen name="tiny">12sp</dimen>
+    <dimen name="nickname_size">16sp</dimen>
 
 </resources>

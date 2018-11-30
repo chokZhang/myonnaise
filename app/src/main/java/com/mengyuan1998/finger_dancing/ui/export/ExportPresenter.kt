@@ -55,6 +55,7 @@ class ExportPresenter(
     }
 
     override fun onConversationStart() {
+        System.out.println("exportPresent " + "get in start")
 
         counter.set(0)
         buffer.clear()
@@ -90,10 +91,12 @@ class ExportPresenter(
 
 
     override fun onConversationStop() {
+        System.out.println("exportPresent " + "get in done")
         // HttpThread(createCsv(buffer,""),createCsv(buffer2,""),createCsv(buffer2,"")).start()
+        //测试链接 http://www.chekehome.com/public/index.php/helpfuc
         OkHttpUtils
                 .postString()
-                .url("http://www.chekehome.com/public/index.php/helpfuc")
+                .url("http://47.94.223.152:80")
                 .content(Gson().toJson(Httpdata(createCsv(buffer,""), createCsv(buffer2,""),createCsv(buffer3,""))))
                 .mediaType(MediaType.parse("application/json; charset=utf-8"))
                 .build()
@@ -103,11 +106,14 @@ class ExportPresenter(
 
                         //TODO 显示在recyclerview中
                         view.addSignText(response);
+                        Log.d("exportPresent", response);
+                        System.out.println("exportPresent " + response)
                     }
 
                     override fun onError(call: Call?, e: java.lang.Exception?, id: Int) {
-                        Log.d("exportPresent", e.toString());
+                        Log.e("exportPresent", e.toString());
                         print(e.toString())
+                        System.out.println("err happend " +  e.toString())
                     }
                 })
 

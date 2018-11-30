@@ -3,6 +3,8 @@ package com.mengyuan1998.finger_dancing.Utilities.auto_complete;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.mengyuan1998.finger_dancing.Utilities.MessageManager;
+
 
 /**
  * Created by boyzhang on 2018/10/1.
@@ -38,6 +40,8 @@ public class SimpleAutocompleteCallback implements AutocompleteCallback <String>
             content = "";
         }
         content = content + item;
+        MessageManager.getInstance().synthesizeVoice(content);
+        Log.d(TAG, "onPopupItemClicked: speek something");
         editable.setText(content);
 
         return true;

@@ -79,6 +79,7 @@ public class MessageManager {
     }
 
     public void buildSignMessage(String content) {
+        Log.d(TAG, "buildSignMessage: content:" + content);
         new_added_msg = new SignMessage("正在识别手语中", 0);
         messages_list.add(new_added_msg);
         new_added_msg.appendTextContent(content);
