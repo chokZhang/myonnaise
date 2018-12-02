@@ -1,49 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/welcome_background">
+    android:background="@drawable/info_background"
+    android:orientation="vertical">
 
     <FrameLayout
+        android:background="@color/tiny_grey"
         android:id="@+id/main_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
-    <RadioGroup
-        android:gravity="center"
-        android:id="@+id/rg_bottom_menu"
-        android:layout_alignParentBottom="true"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:orientation="horizontal">
-        <RadioButton
-            android:checked="true"
-            android:text="社区"
-            android:id="@+id/rb_community"
-            style="@style/RadioButtonStyle"
-            android:drawableTop="@drawable/bottom_community_selector"
-            />
-        <RadioButton
-            android:id="@+id/rb_search"
-            android:text="搜索"
-            style="@style/RadioButtonStyle"
-            android:drawableTop="@drawable/bottom_search_selector"
-            />
-        <RadioButton
-            android:text="信息"
-            android:id="@+id/rb_message"
-            style="@style/RadioButtonStyle"
-            android:drawableTop="@drawable/bottom_message_selector"
-            />
-        <RadioButton
-            android:text="个人"
-            android:id="@+id/rb_user"
-            style="@style/RadioButtonStyle"
-            android:drawableTop="@drawable/bottom_user_selector"
-            />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/tiny_grey">
 
-    </RadioGroup>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
 
-</RelativeLayout>
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/line_horizontal"/>
+
+        <RadioGroup
+            android:gravity="center"
+            android:id="@+id/rg_bottom_menu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+            <RadioButton
+                android:checked="true"
+
+                android:id="@+id/rb_community"
+                style="@style/RadioButtonStyle"
+                android:drawableTop="@drawable/bottom_home_selector"
+                />
+            <RadioButton
+                android:id="@+id/rb_search"
+
+                style="@style/RadioButtonStyle"
+                android:drawableTop="@drawable/bottom_publish_selector"
+                />
+            <RadioButton
+
+                android:id="@+id/rb_message"
+                style="@style/RadioButtonStyle"
+                android:drawableTop="@drawable/bottom_message_selector"
+                />
+            <RadioButton
+
+                android:id="@+id/rb_user"
+                style="@style/RadioButtonStyle"
+                android:drawableTop="@drawable/bottom_user_selector"
+                />
+
+        </RadioGroup>
+
+    </LinearLayout>
+
+</LinearLayout>

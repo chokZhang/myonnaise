@@ -1,5 +1,6 @@
 package com.mengyuan1998.finger_dancing.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +16,7 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         mRootView = inflater.inflate(attachLayoutRes(), container, false);
-        initViews();
+        initViews(getActivity());
         return mRootView;
     }
     /**
@@ -39,7 +40,7 @@ public abstract class BaseFragment extends Fragment {
     /**
      * 初始化视图控件
      */
-    protected abstract void initViews();
+    protected abstract void initViews(Context context);
 
 
 }

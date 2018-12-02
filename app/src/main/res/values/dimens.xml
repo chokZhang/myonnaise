@@ -25,5 +25,7 @@
     <dimen name="welcome_chinese">14sp</dimen>
     <dimen name="tiny">12sp</dimen>
     <dimen name="nickname_size">16sp</dimen>
+    <dimen name="text_info_size">14sp</dimen>
+    <dimen name="praise_size">16sp</dimen>
 
 </resources>

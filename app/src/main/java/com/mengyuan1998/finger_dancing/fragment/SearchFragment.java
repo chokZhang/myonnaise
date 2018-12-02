@@ -1,5 +1,7 @@
 package com.mengyuan1998.finger_dancing.fragment;
 
+import android.content.Context;
+
 import com.mengyuan1998.finger_dancing.R;
 
 public class SearchFragment extends BaseFragment {
@@ -10,7 +12,7 @@ public class SearchFragment extends BaseFragment {
     }
 
     @Override
-    protected void initViews() {
+    protected void initViews(Context context) {
 
     }
 }

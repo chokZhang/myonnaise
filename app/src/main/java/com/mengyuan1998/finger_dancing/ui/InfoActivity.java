@@ -4,8 +4,12 @@ import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import cn.jzvd.JZVideoPlayer;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -15,9 +19,24 @@ import com.mengyuan1998.finger_dancing.fragment.MessageFragment;
 import com.mengyuan1998.finger_dancing.fragment.SearchFragment;
 import com.mengyuan1998.finger_dancing.fragment.UserFragment;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class InfoActivity extends AppCompatActivity {
 
     private static final String TAG = "InfoActivity";
+
+
+    List<Integer> radioButtons = Arrays.asList(R.id.rb_community,
+            R.id.rb_search,
+            R.id.rb_message,
+            R.id.rb_user);
+
+    List<Integer> imgs = Arrays.asList(R.drawable.bottom_home_selector,
+            R.drawable.bottom_publish_selector,
+            R.drawable.bottom_message_selector,
+            R.drawable.bottom_user_selector);
 
     RadioGroup mRgBottomMenu;
     //数组 存储Fragment
@@ -34,6 +53,8 @@ public class InfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_info);
 
         mRgBottomMenu = findViewById(R.id.rg_bottom_menu);
+
+        InitImgSize();
 
         //将Fragment加入数组
         mFragments = new Fragment[] {
@@ -68,8 +89,20 @@ public class InfoActivity extends AppCompatActivity {
                 }
             }
         });
+
     }
 
+    void InitImgSize(){
+        RadioButton radioButton = null;
+        Drawable drawable = null;
+        for(int i = 0; i < radioButtons.size(); i++){
+            radioButton = findViewById(radioButtons.get(i));
+            drawable = getResources().getDrawable(imgs.get(i));
+            drawable.setBounds(0, 0, 80, 80);
+
+            radioButton.setCompoundDrawables(null, drawable, null, null);
+        }
+    }
 
 
     //设置Fragment页面
@@ -77,6 +110,7 @@ public class InfoActivity extends AppCompatActivity {
         if (currentIndex == index) {
             return;
         }
+        JZVideoPlayer.releaseAllVideos();
         //开启事务
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         //隐藏当前Fragment
@@ -91,4 +125,32 @@ public class InfoActivity extends AppCompatActivity {
         ft.commit();
         currentIndex = index;
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        JZVideoPlayer.releaseAllVideos();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (JZVideoPlayer.backPress()) {
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    protected void onSaveInstanceState(Bundle outState) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        for(int i = 0; i < mFragments.length; i++){
+            transaction.remove(mFragments[i]);
+        }
+        transaction.commitAllowingStateLoss();
+        super.onSaveInstanceState(outState);
+    }
+
+
+
+
+
 }

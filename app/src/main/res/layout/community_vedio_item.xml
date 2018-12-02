@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingBottom="15dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/userInfo_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp">
+        <!--头像-->
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/head_img"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            fresco:roundingBorderColor="@color/white"
+            fresco:roundAsCircle="true"
+            fresco:placeholderImage="@drawable/head_img"
+            />
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_marginStart="7dp"
+            android:textColor="@color/white"
+            android:text="JASON"
+            android:layout_gravity="center_vertical"
+            android:textSize="@dimen/nickname_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <!--视频-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+        <cn.jzvd.JZVideoPlayerStandard
+            android:id="@+id/video"
+            android:layout_width="match_parent"
+            android:layout_height="380dp"/>
+    </LinearLayout>
+
+    <!--点赞 分享 -->
+    <LinearLayout
+        android:id="@+id/praise_info_layout_up"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:clickable="true"
+            android:focusable="true"
+            android:id="@+id/praise"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/praise_selector"
+            android:layout_width="23dp"
+            android:layout_height="21dp"
+
+            />
+
+
+        <ImageView
+            android:id="@+id/share"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/share"
+            android:layout_marginStart="15dp"
+            android:layout_width="23dp"
+            android:layout_height="23dp" />
+
+        <TextView
+            android:id="@+id/praise_num"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:textSize="@dimen/praise_size"
+            android:textColor="@color/grey_half"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="20dp"
+            android:text="29，663次赞"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/text_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_info_size"/>
+
+</LinearLayout>

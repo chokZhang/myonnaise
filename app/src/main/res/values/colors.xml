@@ -18,5 +18,6 @@
     <color name="grey_half">#80dcdcdc</color>
     <color name="white_half">#33FFFFFF</color>
     <color name="little_grey">#80dcdcdc</color>
+    <color name="tiny_grey">#33231815</color>
 
 </resources>
