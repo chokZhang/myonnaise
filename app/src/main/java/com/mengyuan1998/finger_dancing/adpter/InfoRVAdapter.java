@@ -96,7 +96,7 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 videoViewHolder.vedio_player.thumbImageView.setImageBitmap(item.getBitmap());
             }
 
-            videoViewHolder.text_info.setText("这是一个测试");
+            videoViewHolder.text_info.setText(item.getInfo_text());
 
 
             if(!item.isGetImgState()){
@@ -277,5 +277,13 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public void setFragmentIndex(int fragmentIndex) {
         this.fragmentIndex = fragmentIndex;
+    }
+
+    public Handler getHandler() {
+        return handler;
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
     }
 }

@@ -33,7 +33,7 @@ public class BaseItem implements Serializable {
     public void setType(int type) {
         this.type = type;
     }
-
+    //返回视频地址
     public String getUrl() {
         return url;
     }

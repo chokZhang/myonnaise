@@ -1,10 +1,14 @@
 package com.mengyuan1998.finger_dancing.fragment;
 
 import android.content.Context;
+import android.os.Handler;
+import android.util.Log;
 
 
 import com.mengyuan1998.finger_dancing.R;
+import com.mengyuan1998.finger_dancing.Utilities.JsonUtils;
 import com.mengyuan1998.finger_dancing.Utilities.info_rv_adapter_item.BaseItem;
+import com.mengyuan1998.finger_dancing.Utilities.info_rv_adapter_item.VedioItem;
 import com.mengyuan1998.finger_dancing.adpter.InfoRVAdapter;
 
 import java.util.ArrayList;
@@ -15,14 +19,18 @@ import java.util.logging.LogRecord;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-public class CommunityFragment extends BaseFragment {
+public class CommunityFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener{
 
     private static final String TAG = "CommunityFragment";
 
+    private SwipeRefreshLayout swiper;
     private RecyclerView mRecyclerView;
     private InfoRVAdapter mAdapter;
     private List<BaseItem> items = new ArrayList<>();
+    String jsonTemp = "[{\"create_time\": \"2018-11-30 21:46:13\", \"info\": \"123\", \"thumbs\": 0, \"video_link\": \"/content/1/video/4d3e3ce4-f4a6-11e8-bcd3-00163e2ef950\", \"id\": 9, \"img_link\": \"/content/1/img/4d3e3ce5-f4a6-11e8-bcd3-00163e2ef950\"}, {\"create_time\": \"2018-11-30 21:46:17\", \"info\": \"123\", \"thumbs\": 0, \"video_link\": \"/content/1/video/4f974486-f4a6-11e8-bcd3-00163e2ef950\", \"id\": 10, \"img_link\": \"/content/1/img/4f974487-f4a6-11e8-bcd3-00163e2ef950\"}, {\"create_time\": \"2018-11-30 14:01:52\", \"info\": null, \"thumbs\": 0, \"video_link\": null, \"id\": 11, \"img_link\": null}, {\"create_time\": \"2018-12-02 18:50:51\", \"info\": \"214\", \"thumbs\": 0, \"video_link\": \"\", \"id\": 12, \"img_link\": \"\"}]";
+
 
 
     @Override
@@ -35,18 +43,53 @@ public class CommunityFragment extends BaseFragment {
     @Override
     protected void initViews(Context context) {
         mRecyclerView = findViewById(R.id.community_fragment_rv);
+        //初始化SwipeRefreshLayout
+        swiper = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        //为SwipeRefreshLayout设置监听事件
+        swiper.setOnRefreshListener(this);
+        //为SwipeRefreshLayout设置刷新时的颜色变化，最多可以设置4种
+        swiper.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
         //设置LayoutManager
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
 
-        InitItems();
+        //InitItems();
         //设置Adapter
-        InfoRVAdapter adapter = new InfoRVAdapter(context, items);
-        mRecyclerView.setAdapter(adapter);
+        mAdapter = new InfoRVAdapter(context, items);
+        mRecyclerView.setAdapter(mAdapter);
 
 
 
+    }
+
+    @Override
+    public void onRefresh() {
+        Log.d(TAG, "onRefresh: get in");
+        new Thread(){
+            @Override
+            public void run(){
+                try{
+                    List<BaseItem> items = JsonUtils.parseJSONWithJSONObject(jsonTemp);
+                    mAdapter.setmList(items);
+                    mAdapter.getHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mAdapter.notifyDataSetChanged();
+                            swiper.setRefreshing(false);
+                        }
+                    });
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.d(TAG, "run: on err");
+                }
+            }
+        }.start();
     }
 
     void InitItems(){
