@@ -16,7 +16,9 @@ interface ExportContract {
 
         fun showSpeechReset()
 
-        fun addSignText(content : String?)
+        fun disableStartCollectingButton()
+
+      fun addSignText(content : String?)
 
         fun addVoiceText(content: String)
 

@@ -33,26 +33,26 @@
     </LinearLayout>
 
     <!--视频-->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp">
-        <cn.jzvd.JZVideoPlayerStandard
-            android:id="@+id/video"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="380dp"/>
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+            <cn.jzvd.JZVideoPlayerStandard
+                android:id="@+id/video"
+                android:layout_width="match_parent"
+                android:layout_height="380dp"/>
+        </LinearLayout>
 
-    <!--点赞 分享 -->
-    <LinearLayout
-        android:id="@+id/praise_info_layout_up"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"
-        android:orientation="horizontal">
+        <!--点赞 分享 -->
+        <LinearLayout
+            android:id="@+id/praise_info_layout_up"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:orientation="horizontal">
 
-        <ImageView
+            <ImageView
             android:clickable="true"
             android:focusable="true"
             android:id="@+id/praise"
@@ -93,6 +93,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="10dp"
         android:textColor="@color/white"
         android:textSize="@dimen/text_info_size"/>

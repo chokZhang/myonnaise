@@ -10,14 +10,20 @@ public class VedioItem extends BaseItem{
     private String info;
     private String create_time;
     private int id;
+    private String baseUrl = "http://39.96.24.179";
 
     public VedioItem(JSONObject jsonObject) throws Exception {
         id = Integer.valueOf(jsonObject.getString("id")).intValue();
         thumbs = Integer.valueOf(jsonObject.getString("thumbs")).intValue();
-        vedio_link = jsonObject.getString("video_link");
+        vedio_link = baseUrl + jsonObject.getString("video_link");
         img_link = jsonObject.getString("img_link");
         info = jsonObject.getString("info");
         create_time = jsonObject.getString("create_time");
+    }
+
+    public VedioItem(){
+        vedio_link = "http://sign-resource.oss-cn-beijing.aliyuncs.com/%E5%A4%A7%E5%B8%85%E5%BA%9C-%E6%96%B9%E5%BD%A2%E9%BB%91%E6%A1%86.mp4";
+        info = "大帅府的介绍。";
     }
 
     public int getThumbs() {

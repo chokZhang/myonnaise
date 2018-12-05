@@ -24,6 +24,7 @@ import com.mengyuan1998.finger_dancing.adpter.ConversationMessagesRVAdapter
 import kotlinx.android.synthetic.main.layout_export.*
 import java.io.File
 import java.io.FileOutputStream
+import java.lang.Exception
 import javax.inject.Inject
 
 
@@ -240,5 +241,13 @@ class ExportFragment : com.mengyuan1998.finger_dancing.BaseFragment<ExportContra
 
     override fun disImg() {
         control_layout.visibility = View.INVISIBLE
+    }
+
+
+    //Myo未能初始化成功
+    override fun disableStartCollectingButton() {
+        Toast.makeText(activity, "手环初始化失败， 请重新连接设备", Toast.LENGTH_SHORT).show()
+        //不可以交流
+        startCommunicate_img.isEnabled = false;
     }
 }

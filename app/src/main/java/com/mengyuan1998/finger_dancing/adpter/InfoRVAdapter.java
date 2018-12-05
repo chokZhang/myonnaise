@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.mengyuan1998.finger_dancing.R;
 import com.mengyuan1998.finger_dancing.Utilities.info_rv_adapter_item.BaseItem;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -71,6 +72,11 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case TYPE_TEXT: {
 
                 break;
+            }
+            default:{
+                Log.d(TAG, "onCreateViewHolder: default");
+                view = View.inflate(context, R.layout.community_upload_item, null);
+                return new UploadHolder(view);
             }
 
         }
@@ -195,6 +201,14 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
+    class UploadHolder extends RecyclerView.ViewHolder{
+
+        public UploadHolder(View view){
+            super(view);
+
+        }
+    }
+
     class TextViewHolder extends RecyclerView.ViewHolder{
 
         public TextViewHolder(View view){
@@ -233,7 +247,7 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public int getItemViewType(int position){
         BaseItem item = mList.get(position);
 
-        if(null != item && item.getType() != -1){
+        if(null != item){
             return item.getType();
         }
 
@@ -261,6 +275,22 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
         }
         return bitmap;
+    }
+
+    public void addHeader(){
+        Log.d(TAG, "addHeader: added");
+        mList.add(0, new BaseItem());
+        notifyItemInserted(0);
+    }
+
+    public void update(final int position, BaseItem item){
+        mList.set(position, item);
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                notifyItemChanged(position);
+            }
+        });
     }
 
     public List<BaseItem> getmList() {

@@ -43,7 +43,7 @@ class ExportPresenter(
         deviceManager.myo?.apply {
             if (!this.isStreaming()) {
                 //TODO
-                //view.disableStartCollectingButton()
+                view.disableStartCollectingButton()
 
             }
         }

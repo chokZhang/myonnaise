@@ -3,6 +3,7 @@ package com.mengyuan1998.finger_dancing.fragment;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 
 import com.mengyuan1998.finger_dancing.R;
@@ -29,9 +30,14 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
     private RecyclerView mRecyclerView;
     private InfoRVAdapter mAdapter;
     private List<BaseItem> items = new ArrayList<>();
+    private static CommunityFragment fragment = new CommunityFragment();
+    private boolean freshed = false;
     String jsonTemp = "[{\"create_time\": \"2018-11-30 21:46:13\", \"info\": \"123\", \"thumbs\": 0, \"video_link\": \"/content/1/video/4d3e3ce4-f4a6-11e8-bcd3-00163e2ef950\", \"id\": 9, \"img_link\": \"/content/1/img/4d3e3ce5-f4a6-11e8-bcd3-00163e2ef950\"}, {\"create_time\": \"2018-11-30 21:46:17\", \"info\": \"123\", \"thumbs\": 0, \"video_link\": \"/content/1/video/4f974486-f4a6-11e8-bcd3-00163e2ef950\", \"id\": 10, \"img_link\": \"/content/1/img/4f974487-f4a6-11e8-bcd3-00163e2ef950\"}, {\"create_time\": \"2018-11-30 14:01:52\", \"info\": null, \"thumbs\": 0, \"video_link\": null, \"id\": 11, \"img_link\": null}, {\"create_time\": \"2018-12-02 18:50:51\", \"info\": \"214\", \"thumbs\": 0, \"video_link\": \"\", \"id\": 12, \"img_link\": \"\"}]";
 
 
+    public static CommunityFragment getInstance(){
+        return fragment;
+    }
 
     @Override
     protected int attachLayoutRes() {
@@ -62,19 +68,37 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
         //设置Adapter
         mAdapter = new InfoRVAdapter(context, items);
         mRecyclerView.setAdapter(mAdapter);
-
+        onRefresh();
 
 
     }
 
     @Override
+    public void onStart(){
+        super.onStart();
+    }
+
+    @Override
     public void onRefresh() {
+
+        if(freshed){
+            mAdapter.getHandler().post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getActivity(), "没有更多内容了", Toast.LENGTH_LONG).show();
+                    swiper.setRefreshing(false);
+                }
+            });
+            return;
+        }
+
         Log.d(TAG, "onRefresh: get in");
         new Thread(){
             @Override
             public void run(){
                 try{
-                    List<BaseItem> items = JsonUtils.parseJSONWithJSONObject(jsonTemp);
+                    /*List<BaseItem> items = JsonUtils.parseJSONWithJSONObject(jsonTemp);
+                    items.addAll(mAdapter.getmList());
                     mAdapter.setmList(items);
                     mAdapter.getHandler().post(new Runnable() {
                         @Override
@@ -82,7 +106,18 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
                             mAdapter.notifyDataSetChanged();
                             swiper.setRefreshing(false);
                         }
+                    });*/
+
+                    mAdapter.getmList().add(new VedioItem());
+                    mAdapter.getHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mAdapter.notifyDataSetChanged();
+                            swiper.setRefreshing(false);
+                        }
                     });
+
+                    freshed = true;
 
                 }catch (Exception e){
                     e.printStackTrace();
@@ -112,6 +147,18 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
         item3.setUrl("http://sign-resource.oss-cn-beijing.aliyuncs.com/%E5%A4%A7%E5%B8%85%E5%BA%9C-%E6%96%B9%E5%BD%A2%E8%A3%81%E5%88%87.mp4");
         items.add(item3);
 
+    }
+
+    public void addHeader(){
+        mAdapter.addHeader();
+    }
+
+    public void update(int position, BaseItem item){
+        mAdapter.update(position, item);
+    }
+
+    public void scrollToTop(){
+        mRecyclerView.smoothScrollToPosition(0);
     }
 
 

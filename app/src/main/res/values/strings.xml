@@ -78,5 +78,9 @@
     <string name="hint_sign_confirm">以上手语是否正确?</string>
     <string name="hint_sign_recapture">是否重新采集手语</string>
     <string name="text_edit_hint">请在这里输入想要发送的信息</string>
+    <string name="record">Record</string>
+    <string name="description_info">Info</string>
+    <string name="permission_request">This sample needs permission for camera and audio recording.</string>
+    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
 
 </resources>

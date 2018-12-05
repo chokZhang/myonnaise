@@ -23,4 +23,12 @@ public class JsonUtils {
 
         return items;
     }
+
+    public static BaseItem parseJSON(String jsondata) throws Exception {
+
+        JSONObject jsonObject = new JSONObject(jsondata);
+
+
+        return new VedioItem(jsonObject);
+    }
 }

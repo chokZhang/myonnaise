@@ -44,7 +44,7 @@
                 android:drawableTop="@drawable/bottom_home_selector"
                 />
             <RadioButton
-                android:id="@+id/rb_search"
+                android:id="@+id/rb_publish"
 
                 style="@style/RadioButtonStyle"
                 android:drawableTop="@drawable/bottom_publish_selector"

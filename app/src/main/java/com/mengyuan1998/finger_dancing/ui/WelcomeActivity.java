@@ -84,8 +84,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             }
             case R.id.button_setting : {
                 //TODO 弹出设置界面
-                Intent intent = new Intent(WelcomeActivity.this, InfoActivity.class);
-                startActivity(intent);
+                /*Intent intent = new Intent(WelcomeActivity.this, InfoActivity.class);
+                startActivity(intent);*/
                 break;
             }
             case R.id.startCommunicate_img : {
@@ -98,7 +98,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.recognize_img : {
                 //切换到语音识别界面
                 Log.d(TAG, "onClick: click voiceRecognize");
-                Intent intent = new Intent(WelcomeActivity.this, VocieRecognizeActivity.class);
+                Intent intent = new Intent(WelcomeActivity.this, InfoActivity.class);
                 startActivity(intent);
                 break;
             }

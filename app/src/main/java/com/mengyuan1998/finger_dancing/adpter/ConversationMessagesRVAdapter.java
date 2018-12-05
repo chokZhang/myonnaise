@@ -110,7 +110,6 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
         }
 
         private void setAutocomplete(TextView textView, Context context){
-            //TODO  添加自动补全
             AutocompleteCallback temp = new SimpleAutocompleteCallback();
             Drawable backgroundDrawable = new ColorDrawable(Color.WHITE);
             float elevation = 6f;
@@ -196,6 +195,7 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
                 holder.receive_msg_view.setVisibility(View.VISIBLE);
 
                 MessageManager.getInstance().synthesizeVoice(message.getTextContent());
+                Log.d(TAG, "setHolderViewByMsgState: it's here");
                 holder.msg_content_receive.setText(message.getTextContent());
 
 

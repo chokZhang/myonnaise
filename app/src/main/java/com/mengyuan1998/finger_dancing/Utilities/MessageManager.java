@@ -146,6 +146,7 @@ public class MessageManager {
             new_added_msg.setMsgId(sign_id);
             sign_message_map.put(sign_id, new_added_msg);
         }
+        Log.d(TAG, "processSignMessageFeedback: it's here");
         noticeAllTargetMsgChange();
     }
 

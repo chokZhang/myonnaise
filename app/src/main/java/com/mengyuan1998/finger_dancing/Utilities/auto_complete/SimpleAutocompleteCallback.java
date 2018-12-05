@@ -41,6 +41,7 @@ public class SimpleAutocompleteCallback implements AutocompleteCallback <String>
         }
         content = content + item;
         MessageManager.getInstance().synthesizeVoice(content);
+        Log.d(TAG, "onPopupItemClicked: it's here");
         Log.d(TAG, "onPopupItemClicked: speek something");
         editable.setText(content);
 
