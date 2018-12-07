@@ -1,5 +1,6 @@
 package com.mengyuan1998.finger_dancing.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
@@ -21,6 +22,7 @@ import java.util.logging.LogRecord;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 public class CommunityFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener{
 
@@ -32,6 +34,7 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
     private List<BaseItem> items = new ArrayList<>();
     private static CommunityFragment fragment = new CommunityFragment();
     private boolean freshed = false;
+    Activity mActivity;
     String jsonTemp = "[{\"create_time\": \"2018-11-30 21:46:13\", \"info\": \"123\", \"thumbs\": 0, \"video_link\": \"/content/1/video/4d3e3ce4-f4a6-11e8-bcd3-00163e2ef950\", \"id\": 9, \"img_link\": \"/content/1/img/4d3e3ce5-f4a6-11e8-bcd3-00163e2ef950\"}, {\"create_time\": \"2018-11-30 21:46:17\", \"info\": \"123\", \"thumbs\": 0, \"video_link\": \"/content/1/video/4f974486-f4a6-11e8-bcd3-00163e2ef950\", \"id\": 10, \"img_link\": \"/content/1/img/4f974487-f4a6-11e8-bcd3-00163e2ef950\"}, {\"create_time\": \"2018-11-30 14:01:52\", \"info\": null, \"thumbs\": 0, \"video_link\": null, \"id\": 11, \"img_link\": null}, {\"create_time\": \"2018-12-02 18:50:51\", \"info\": \"214\", \"thumbs\": 0, \"video_link\": \"\", \"id\": 12, \"img_link\": \"\"}]";
 
 
@@ -66,7 +69,7 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
 
         //InitItems();
         //设置Adapter
-        mAdapter = new InfoRVAdapter(context, items);
+        mAdapter = new InfoRVAdapter(getActivity(), items);
         mRecyclerView.setAdapter(mAdapter);
         onRefresh();
 
@@ -76,6 +79,9 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
     @Override
     public void onStart(){
         super.onStart();
+        IjkMediaPlayer.loadLibrariesOnce(null);
+        IjkMediaPlayer.native_profileBegin("libijkplayer.so");
+
     }
 
     @Override
@@ -108,6 +114,7 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
                         }
                     });*/
 
+                    mAdapter.getmList().add(new VedioItem());
                     mAdapter.getmList().add(new VedioItem());
                     mAdapter.getHandler().post(new Runnable() {
                         @Override
@@ -149,11 +156,18 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
 
     }
 
+    @Override
+    public void onPause(){
+        super.onPause();
+        mAdapter.realease();
+    }
+
     public void addHeader(){
         mAdapter.addHeader();
     }
 
     public void update(int position, BaseItem item){
+        Log.d(TAG, "update: ");
         mAdapter.update(position, item);
     }
 

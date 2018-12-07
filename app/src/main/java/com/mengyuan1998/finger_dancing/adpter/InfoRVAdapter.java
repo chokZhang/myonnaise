@@ -1,6 +1,8 @@
 package com.mengyuan1998.finger_dancing.adpter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
@@ -12,8 +14,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.mengyuan1998.finger_dancing.R;
 import com.mengyuan1998.finger_dancing.Utilities.info_rv_adapter_item.BaseItem;
+import com.mengyuan1998.finger_dancing.Utilities.widget.OnShowThumbnailListener;
+import com.mengyuan1998.finger_dancing.Utilities.widget.PlayStateParams;
+import com.mengyuan1998.finger_dancing.Utilities.widget.PlayerView;
+import com.mengyuan1998.finger_dancing.Utilities.widget.VideoijkBean;
+import com.mengyuan1998.finger_dancing.media.IRenderView;
+import com.mengyuan1998.finger_dancing.media.IjkVideoView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,16 +42,21 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private final int TYPE_TEXT = 2;
     private final int TYPE_USER_VEDIO = 3;
 
+    private PlayerView vedioPresent;
+
     private int fragmentIndex = 0;
 
     List<BaseItem> mList;
 
     Handler handler = new Handler();
 
+    Activity mActivity;
+
     Context context;
 
-    public InfoRVAdapter(Context context, List<BaseItem> items){
-        this.context = context;
+    public InfoRVAdapter(Activity activity, List<BaseItem> items){
+        this.mActivity = activity;
+        this.context = activity;
         mList = items;
         Log.d(TAG, "InfoRVAdapter: get start");
     }
@@ -91,21 +105,33 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final BaseItem item = mList.get(position);
 
         if(holder instanceof VideoViewHolder){
-            VideoViewHolder videoViewHolder = (VideoViewHolder) holder;
+            final VideoViewHolder videoViewHolder = (VideoViewHolder) holder;
             videoViewHolder.user_name.setText(item.getUser_name());
             videoViewHolder.praise_num.setText(item.getPraise_num() + " 次点赞");
 
             Log.d(TAG, "onBindViewHolder: url is " + item.getUrl());
-            videoViewHolder.vedio_player.setUp(item.getUrl(), JZVideoPlayerStandard.SCREEN_WINDOW_NORMAL, "video");
 
-            if(null != item.getBitmap()){
+            videoViewHolder.mVideoPresent.setPlaySource(item.getUrl());
+
+            //videoViewHolder.vedio_player.setUp(item.getUrl(), JZVideoPlayerStandard.SCREEN_WINDOW_NORMAL, "video");
+            /*videoViewHolder.vedio_player.setAspectRatio(IRenderView.AR_ASPECT_FIT_PARENT);
+            videoViewHolder.vedio_player.setVideoURI(Uri.parse(item.getUrl()));*/
+            /*videoViewHolder.vedio_player.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG, "onClick: click");
+                    videoViewHolder.vedio_player.start();
+                }
+            });*/
+
+            /*if(null != item.getBitmap()){
                 videoViewHolder.vedio_player.thumbImageView.setImageBitmap(item.getBitmap());
-            }
+            }*/
 
             videoViewHolder.text_info.setText(item.getInfo_text());
 
 
-            if(!item.isGetImgState()){
+            /*if(!item.isGetImgState()){
                 new Thread(){
                     @Override
                     public void run() {
@@ -118,7 +144,7 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         });
                     }
                 }.start();
-            }
+            }*/
 
         }
         else if(holder instanceof UserVedioViewHolder){
@@ -155,17 +181,70 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     class VideoViewHolder extends RecyclerView.ViewHolder{
 
         CommonView commonView = new CommonView();
-        JZVideoPlayerStandard vedio_player;
+        //IjkVideoView vedio_player;
         TextView text_info;
         ImageView head_img;
         TextView  user_name;
         TextView praise_num;
+        PlayerView mVideoPresent;
 
 
         public VideoViewHolder(View view){
             super(view);
             InitCommonView(view, commonView);
-            vedio_player = view.findViewById(R.id.video);
+            /*vedio_player = view.findViewById(R.id.video);
+            vedio_player.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG, "onClick: click");
+                    vedio_player.start();
+                }
+            });*/
+            mVideoPresent = new PlayerView(mActivity, view) {
+                @Override
+                public PlayerView toggleProcessDurationOrientation() {
+                    hideSteam(getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    return setProcessDurationOrientation(getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT ? PlayStateParams.PROCESS_PORTRAIT : PlayStateParams.PROCESS_LANDSCAPE);
+                }
+
+                @Override
+                public PlayerView setPlaySource(List<VideoijkBean> list) {
+                    return super.setPlaySource(list);
+                }
+            }
+                    .setTitle("什么")
+                    .setProcessDurationOrientation(PlayStateParams.PROCESS_PORTRAIT)
+                    .setScaleType(PlayStateParams.fillparent)
+                    .forbidTouch(false)
+                    .hideSteam(true)
+                    .hideCenterPlayer(false)
+                    .showThumbnail(new OnShowThumbnailListener() {
+                        @Override
+                        public void onShowThumbnail(ImageView ivThumbnail) {
+                            Glide.with(context)
+                                    .load("http://pic2.nipic.com/20090413/406638_125424003_2.jpg")
+                                    .placeholder(R.color.cl_default)
+                                    .error(R.color.cl_error)
+                                    .into(ivThumbnail);
+                        }
+                    });
+                    /*.setPlaySource(list)
+                    //设置免费播放时长
+                    //.setChargeTie(true,60)
+                    .startPlay();*/
+
+            mVideoPresent.setOnStartListener(new PlayerView.OnStartListener() {
+                @Override
+                public void getPlayer(PlayerView playerView) {
+                    if(vedioPresent == null){
+                        vedioPresent = playerView;
+                    }
+                    else{
+                        vedioPresent.pausePlay();
+                        vedioPresent = playerView;
+                    }
+                }
+            });
             text_info = view.findViewById(R.id.text_info);
             head_img = view.findViewById(R.id.head_img);
             user_name = view.findViewById(R.id.user_name);
@@ -293,6 +372,12 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         });
     }
 
+    public void realease(){
+        if(vedioPresent != null)
+        vedioPresent.pausePlay();
+        vedioPresent = null;
+    }
+
     public List<BaseItem> getmList() {
         return mList;
     }
@@ -315,5 +400,9 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public void setHandler(Handler handler) {
         this.handler = handler;
+    }
+
+    public void setmActivity(Activity mActivity) {
+        this.mActivity = mActivity;
     }
 }

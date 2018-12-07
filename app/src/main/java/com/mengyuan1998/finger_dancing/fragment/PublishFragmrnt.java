@@ -125,11 +125,12 @@ public class PublishFragmrnt extends BaseFragment {
         }, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                Log.d(TAG, "onFailure: err");
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                Log.d(TAG, "onResponse: get in");
                 if (response != null) {
                     String result = response.body().string();
                     Log.i(TAG, "result===" + result);

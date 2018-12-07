@@ -127,7 +127,7 @@ public class InfoActivity extends AppCompatActivity {
                         JZVideoPlayer.releaseAllVideos();
 
                         //存储视频的文件对象
-
+                        login();
                         outputVedio = new File(getExternalCacheDir() + "/vedios", "output_vedio.mp4");
                         try{
                             if(outputVedio.exists()){
@@ -337,7 +337,7 @@ public class InfoActivity extends AppCompatActivity {
     }
 
     public void login(){
-        HttpUtil.login(loginUrl, "", "" , new HttpUtil.ProgressListener() {
+        HttpUtil.login(loginUrl, "superuser", "123456" , new HttpUtil.ProgressListener() {
             @Override
             public void onProgress(long currentBytes, long contentLength, boolean done) {
                 Log.i(TAG, "currentBytes==" + currentBytes + "==contentLength==" + contentLength + "==done==" + done);

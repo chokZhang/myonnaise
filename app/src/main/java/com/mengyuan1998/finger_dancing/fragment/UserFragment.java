@@ -35,7 +35,7 @@ public class UserFragment extends BaseFragment {
         InitImgSize();
         InitItems();
         //设置Adapter
-        InfoRVAdapter adapter = new InfoRVAdapter(context, items);
+        InfoRVAdapter adapter = new InfoRVAdapter(getActivity(), items);
         //声明是userFragment在使用adapter
         adapter.setFragmentIndex(3);
         mRecyclerView.setAdapter(adapter);
