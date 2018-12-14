@@ -1,15 +1,21 @@
 package com.mengyuan1998.finger_dancing.Utilities;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import wseemann.media.FFmpegMediaMetadataRetriever;
 
 public class GetImgUtils {
 
     private static final String TAG = "GetImgUtils";
+
+    private static File imgFile;
 
     public Bitmap getBitmapFormUrl(String url) {
         Log.d(TAG, "getBitmapFormUrl: url: " + url);
@@ -34,27 +40,32 @@ public class GetImgUtils {
     }
 
     /**
-     * 获取本地视频的第一帧
-     *
-     * @param filePath
-     * @return
+     * 存储视频的缩略图
      */
-    public static Bitmap getLocalVideoThumbnail(String filePath) {
-        Bitmap bitmap = null;
-        //MediaMetadataRetriever 是android中定义好的一个类，提供了统一
-        //的接口，用于从输入的媒体文件中取得帧和元数据；
-        FFmpegMediaMetadataRetriever retriever = new FFmpegMediaMetadataRetriever();
-        try {
-            //根据文件路径获取缩略图
-            retriever.setDataSource(filePath);
-            //获得第一帧图片
-            bitmap = retriever.getFrameAtTime();
-        } catch (IllegalArgumentException e) {
+    public static boolean saveBitmapToFile(Context context, Bitmap bitmap){
+        imgFile = new File(context.getExternalCacheDir() + "/vedios", "thumbnail.jpg");
+        try{
+            if(imgFile.exists()){
+                imgFile.delete();
+            }
+            if(!imgFile.getParentFile().exists()){
+                imgFile.getParentFile().mkdir();
+            }
+            imgFile.createNewFile();
+
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(imgFile));
+
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+
+            bos.flush();
+            bos.close();
+
+        }catch (Exception e){
+            Log.e(TAG, "onClick: err happend in takeVedio");
             e.printStackTrace();
-        } finally {
-            retriever.release();
+            return false;
         }
-        return bitmap;
+        return true;
     }
 
 }

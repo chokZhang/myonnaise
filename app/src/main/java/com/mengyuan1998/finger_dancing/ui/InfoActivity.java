@@ -109,22 +109,29 @@ public class InfoActivity extends AppCompatActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         //设置为默认界面 MainHomeFragment
         ft.add(R.id.main_content,mFragments[0]).commit();
+        
+        if(mFragments[0].isAdded()){
+            Log.d(TAG, "onCreate: added");
+        }
+        
         //RadioGroup选中事件监听 改变fragment
         mRgBottomMenu.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                Log.d(TAG, "onCheckedChanged: change");
+                
+                if(fromClear){
+                    fromClear = false;
+                    Log.d(TAG, "onCheckedChanged: done");
+                    return;
+                }
                 switch (checkedId) {
                     case R.id.rb_community:
                         Log.d(TAG, "onCheckedChanged: get i n 0");
                         setIndexSelected(0);
                         break;
                     case R.id.rb_publish:{
-                        if(fromClear){
-                            fromClear = false;
-                            return;
-                        }
                         Log.d(TAG, "onCheckedChanged: get in");
-                        JZVideoPlayer.releaseAllVideos();
 
                         //存储视频的文件对象
                         login();
@@ -172,6 +179,13 @@ public class InfoActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+
+    }
+
+    //设置图标大小
     void InitImgSize(){
         RadioButton radioButton = null;
         Drawable drawable = null;
@@ -188,11 +202,10 @@ public class InfoActivity extends AppCompatActivity {
     //设置Fragment页面
     public void setIndexSelected(int index) {
 
-        if (currentIndex == index) {
+        if (currentIndex == index && mFragments[currentIndex].isAdded()) {
             return;
         }
-        Log.d(TAG, "setIndexSelected: get in");
-        JZVideoPlayer.releaseAllVideos();
+
         //开启事务
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         //隐藏当前Fragment
@@ -200,7 +213,7 @@ public class InfoActivity extends AppCompatActivity {
         ft.hide(mFragments[currentIndex]);
         //判断Fragment是否已经添加
         if (!mFragments[index].isAdded()) {
-            Log.d(TAG, "setIndexSelected: add");
+            Log.d(TAG, "setIndexSelected: add " + index);
             ft.add(R.id.main_content,mFragments[index]).show(mFragments[index]);
         }else {
             //显示新的Fragment
@@ -222,8 +235,14 @@ public class InfoActivity extends AppCompatActivity {
                         }
                     }).run();
                     communityFragment.addHeader();*/
+                    setIndexSelected(1);
                 }
-                setIndexSelected(1);
+                else{
+                    fromClear = true;
+                    mRgBottomMenu.clearCheck();
+                    mRgBottomMenu.check(radioButtons.get(currentIndex));
+
+                }
                 //break;
             }
             case GET_VEDIO:{
@@ -270,20 +289,16 @@ public class InfoActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        JZVideoPlayer.releaseAllVideos();
     }
 
     @Override
     public void onBackPressed() {
-        if (JZVideoPlayer.backPress()) {
-            return;
-        }
         super.onBackPressed();
     }
 
     protected void onSaveInstanceState(Bundle outState) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        for(int i = 1; i < mFragments.length; i++){
+        for(int i = 0; i < mFragments.length && i != currentIndex; i++){
             transaction.remove(mFragments[i]);
         }
         transaction.commitAllowingStateLoss();

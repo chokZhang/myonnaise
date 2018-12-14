@@ -194,7 +194,10 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
             case SignMessage.INITIAL:
                 holder.receive_msg_view.setVisibility(View.VISIBLE);
 
-                MessageManager.getInstance().synthesizeVoice(message.getTextContent());
+                if(!message.isSpeaked()){
+                    MessageManager.getInstance().synthesizeVoice(message.getTextContent());
+                    message.setSpeaked(true);
+                }
                 Log.d(TAG, "setHolderViewByMsgState: it's here");
                 holder.msg_content_receive.setText(message.getTextContent());
 

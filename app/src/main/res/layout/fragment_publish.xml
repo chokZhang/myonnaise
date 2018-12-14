@@ -40,14 +40,18 @@
     </LinearLayout>
 
     <!--视频-->
-    <LinearLayout
+    <!--<LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <com.mengyuan1998.finger_dancing.Utilities.VedioAutoPlayer
             android:id="@+id/video"
             android:layout_width="match_parent"
             android:layout_height="380dp"/>
-    </LinearLayout>
+    </LinearLayout>-->
+    <include
+        layout="@layout/simple_player_view_player"
+        android:layout_width="match_parent"
+        android:layout_height="380dp"/>
 
     <EditText
         android:id="@+id/talkSomething"

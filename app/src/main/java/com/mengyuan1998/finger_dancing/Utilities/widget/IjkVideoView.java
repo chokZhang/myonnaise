@@ -43,12 +43,12 @@ import java.util.Locale;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import tv.danmaku.ijk.media.exo.IjkExoMediaPlayer;
 import tv.danmaku.ijk.media.player.AndroidMediaPlayer;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 import tv.danmaku.ijk.media.player.TextureMediaPlayer;
 import tv.danmaku.ijk.media.player.misc.IMediaDataSource;
-
 
 public class IjkVideoView extends FrameLayout implements MediaController.MediaPlayerControl {
     private String TAG = this.getClass().getSimpleName();
@@ -361,7 +361,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             } else {
                 IjkMediaPlayer ijkMediaPlayer = null;
                 if (mUri != null) {
-                    ijkMediaPlayer = new IjkMediaPlayer();
+                    ijkMediaPlayer = createPlayer();
                     ijkMediaPlayer.native_setLogLevel(IjkMediaPlayer.IJK_LOG_DEBUG);
 
                     if (usingMediaCodec) {
@@ -386,14 +386,6 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                     } else {
                         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", pixelFormat);
                     }
-                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 1);
-                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 0);
-
-                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0);
-                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "timeout", 10000000);
-                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "reconnect", 1);
-
-                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48);
                 }
                 mMediaPlayer = ijkMediaPlayer;
             }
@@ -579,43 +571,43 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                     }
                     switch (arg1) {
                         case IMediaPlayer.MEDIA_INFO_VIDEO_TRACK_LAGGING:
-                            Log.d(TAG, "MEDIA_INFO_VIDEO_TRACK_LAGGING:");
+                            Log.d(TAG, "zhang MEDIA_INFO_VIDEO_TRACK_LAGGING:");
                             break;
                         case IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
-                            Log.d(TAG, "MEDIA_INFO_VIDEO_RENDERING_START:");
+                            Log.d(TAG, "zhang MEDIA_INFO_VIDEO_RENDERING_START:");
                             break;
                         case IMediaPlayer.MEDIA_INFO_BUFFERING_START:
-                            Log.d(TAG, "MEDIA_INFO_BUFFERING_START:");
+                            Log.d(TAG, "zhang MEDIA_INFO_BUFFERING_START:");
                             break;
                         case IMediaPlayer.MEDIA_INFO_BUFFERING_END:
-                            Log.d(TAG, "MEDIA_INFO_BUFFERING_END:");
+                            Log.d(TAG, "zhang MEDIA_INFO_BUFFERING_END:");
                             break;
                         case IMediaPlayer.MEDIA_INFO_NETWORK_BANDWIDTH:
-                            Log.d(TAG, "MEDIA_INFO_NETWORK_BANDWIDTH: " + arg2);
+                            Log.d(TAG, "zhang MEDIA_INFO_NETWORK_BANDWIDTH: " + arg2);
                             break;
                         case IMediaPlayer.MEDIA_INFO_BAD_INTERLEAVING:
-                            Log.d(TAG, "MEDIA_INFO_BAD_INTERLEAVING:");
+                            Log.d(TAG, "zhang MEDIA_INFO_BAD_INTERLEAVING:");
                             break;
                         case IMediaPlayer.MEDIA_INFO_NOT_SEEKABLE:
-                            Log.d(TAG, "MEDIA_INFO_NOT_SEEKABLE:");
+                            Log.d(TAG, "zhang MEDIA_INFO_NOT_SEEKABLE:");
                             break;
                         case IMediaPlayer.MEDIA_INFO_METADATA_UPDATE:
-                            Log.d(TAG, "MEDIA_INFO_METADATA_UPDATE:");
+                            Log.d(TAG, "zhang MEDIA_INFO_METADATA_UPDATE:");
                             break;
                         case IMediaPlayer.MEDIA_INFO_UNSUPPORTED_SUBTITLE:
-                            Log.d(TAG, "MEDIA_INFO_UNSUPPORTED_SUBTITLE:");
+                            Log.d(TAG, "zhang MEDIA_INFO_UNSUPPORTED_SUBTITLE:");
                             break;
                         case IMediaPlayer.MEDIA_INFO_SUBTITLE_TIMED_OUT:
-                            Log.d(TAG, "MEDIA_INFO_SUBTITLE_TIMED_OUT:");
+                            Log.d(TAG, "zhang MEDIA_INFO_SUBTITLE_TIMED_OUT:");
                             break;
                         case IMediaPlayer.MEDIA_INFO_VIDEO_ROTATION_CHANGED:
                             mVideoRotationDegree = arg2;
-                            Log.d(TAG, "MEDIA_INFO_VIDEO_ROTATION_CHANGED: " + arg2);
+                            Log.d(TAG, "zhang MEDIA_INFO_VIDEO_ROTATION_CHANGED: " + arg2);
                             if (mRenderView != null)
                                 mRenderView.setVideoRotation(arg2);
                             break;
                         case IMediaPlayer.MEDIA_INFO_AUDIO_RENDERING_START:
-                            Log.d(TAG, "MEDIA_INFO_AUDIO_RENDERING_START:");
+                            Log.d(TAG, "zhang MEDIA_INFO_AUDIO_RENDERING_START:");
                             break;
                     }
                     return true;
@@ -661,9 +653,9 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                                 .setPositiveButton("error",
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int whichButton) {
-                                            /* If we get here, there is no onError listener, so
-                                             * at least inform them that the video is over.
-                                             */
+                                                /* If we get here, there is no onError listener, so
+                                                 * at least inform them that the video is over.
+                                                 */
                                                 if (mOnCompletionListener != null) {
                                                     mOnCompletionListener.onCompletion(mMediaPlayer);
                                                 }
@@ -1058,5 +1050,36 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                 break;
             }
         }
+    }
+
+    //创建一个新的player
+    private IjkMediaPlayer createPlayer() {
+        IjkMediaPlayer ijkMediaPlayer = new IjkMediaPlayer();
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 1);
+
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", IjkMediaPlayer.SDL_FCC_RV32);
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 0);
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_frame", 0);
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 0);
+
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "http-detect-range-support", 1);
+
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48);
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "min-frames", 100);
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "enable-accurate-seek", 1);
+
+
+
+        ijkMediaPlayer.setVolume(1.0f, 1.0f);
+
+        return ijkMediaPlayer;
+    }
+
+    public boolean setLooping(boolean state){
+        if(mMediaPlayer != null){
+            mMediaPlayer.setLooping(state);
+            return true;
+        }
+        return false;
     }
 }

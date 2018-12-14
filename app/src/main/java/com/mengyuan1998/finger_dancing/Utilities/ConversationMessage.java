@@ -13,6 +13,8 @@ public abstract class ConversationMessage {
     protected String text_content;
     protected int msg_type;
 
+    private boolean isSpeaked;
+
 
 
 
@@ -40,5 +42,13 @@ public abstract class ConversationMessage {
 
     public void setTextContent(String content) {
         text_content = content;
+    }
+
+    public boolean isSpeaked() {
+        return isSpeaked;
+    }
+
+    public void setSpeaked(boolean speaked) {
+        isSpeaked = speaked;
     }
 }

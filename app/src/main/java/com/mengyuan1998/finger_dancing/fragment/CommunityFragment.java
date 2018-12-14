@@ -115,7 +115,6 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
                     });*/
 
                     mAdapter.getmList().add(new VedioItem());
-                    mAdapter.getmList().add(new VedioItem());
                     mAdapter.getHandler().post(new Runnable() {
                         @Override
                         public void run() {

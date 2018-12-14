@@ -36,5 +36,6 @@
 
     <color name="cl_default">#424242</color>
     <color name="cl_error">#ffffff</color>
+    <color name="red">#ec222f</color>
 
 </resources>

@@ -315,7 +315,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
         am.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
         try {
-            mMediaPlayer = createPlayer(mSettings.getPlayer());
+            mMediaPlayer = createPlayer();
 
             // TODO: create SubtitleController in MediaPlayer, but we need
             // a context for the subtitle renderers
@@ -1234,6 +1234,35 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             default:
                 return context.getString(R.string.TrackType_unknown);
         }
+    }
+
+    //创建一个新的player
+    private IMediaPlayer createPlayer() {
+        IjkMediaPlayer ijkMediaPlayer = new IjkMediaPlayer();
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 1);
+
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", IjkMediaPlayer.SDL_FCC_RV32);
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 1);
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 0);
+
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "http-detect-range-support", 1);
+
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48);
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "min-frames", 100);
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "enable-accurate-seek", 1);
+
+        ijkMediaPlayer.setVolume(1.0f, 1.0f);
+
+        setEnableMediaCodec(ijkMediaPlayer,false);
+        return ijkMediaPlayer;
+    }
+
+    //设置是否开启硬解码
+    private void setEnableMediaCodec(IjkMediaPlayer ijkMediaPlayer, boolean isEnable) {
+        int value = isEnable ? 1 : 0;
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", value);//开启硬解码
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", value);
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-handle-resolution-change", value);
     }
 
     private String buildLanguage(String language) {

@@ -111,7 +111,24 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             Log.d(TAG, "onBindViewHolder: url is " + item.getUrl());
 
-            videoViewHolder.mVideoPresent.setPlaySource(item.getUrl());
+
+            videoViewHolder.mVideoPresent.showThumbnail(new OnShowThumbnailListener() {
+                @Override
+                public void onShowThumbnail(final ImageView ivThumbnail) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            final Bitmap bitmap = getBitmapFormUrl(item.getUrl(), position);
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ivThumbnail.setImageBitmap(bitmap);
+                                }
+                            });
+                        }
+                    }).start();
+                }
+            }).setPlaySource(item.getUrl());
 
             //videoViewHolder.vedio_player.setUp(item.getUrl(), JZVideoPlayerStandard.SCREEN_WINDOW_NORMAL, "video");
             /*videoViewHolder.vedio_player.setAspectRatio(IRenderView.AR_ASPECT_FIT_PARENT);
@@ -217,34 +234,25 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     .setScaleType(PlayStateParams.fillparent)
                     .forbidTouch(false)
                     .hideSteam(true)
-                    .hideCenterPlayer(false)
-                    .showThumbnail(new OnShowThumbnailListener() {
-                        @Override
-                        public void onShowThumbnail(ImageView ivThumbnail) {
-                            Glide.with(context)
-                                    .load("http://pic2.nipic.com/20090413/406638_125424003_2.jpg")
-                                    .placeholder(R.color.cl_default)
-                                    .error(R.color.cl_error)
-                                    .into(ivThumbnail);
-                        }
-                    });
+                    .hideHideTopBar(true)
+                    .hideCenterPlayer(false);
                     /*.setPlaySource(list)
                     //设置免费播放时长
                     //.setChargeTie(true,60)
                     .startPlay();*/
 
-            mVideoPresent.setOnStartListener(new PlayerView.OnStartListener() {
+            /*mVideoPresent.setOnStartListener(new PlayerView.OnStartListener() {
                 @Override
                 public void getPlayer(PlayerView playerView) {
                     if(vedioPresent == null){
                         vedioPresent = playerView;
                     }
                     else{
-                        vedioPresent.pausePlay();
+                        vedioPresent.pauseAndRelease();
                         vedioPresent = playerView;
                     }
                 }
-            });
+            });*/
             text_info = view.findViewById(R.id.text_info);
             head_img = view.findViewById(R.id.head_img);
             user_name = view.findViewById(R.id.user_name);

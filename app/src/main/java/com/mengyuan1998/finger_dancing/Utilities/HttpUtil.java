@@ -26,8 +26,8 @@ public class HttpUtil {
 
     private static OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .connectTimeout(10000, TimeUnit.MILLISECONDS)
-            .readTimeout(10000,TimeUnit.MILLISECONDS)
-            .writeTimeout(10000, TimeUnit.MILLISECONDS)
+            .readTimeout(100,TimeUnit.SECONDS)
+            .writeTimeout(100, TimeUnit.SECONDS)
             .cookieJar(new CookieJar(){
                 @Override
                 public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {

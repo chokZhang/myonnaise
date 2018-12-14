@@ -37,7 +37,7 @@
         <item name="android:indeterminateDrawable">
             @drawable/simple_player_progress_horizontal_holo_dark
         </item>
-        <item name="android:thumb">@drawable/simple_player_control_selector_holo_dark</item>
+        <item name="android:thumb">@drawable/point_circular_shape</item>
         <item name="android:minHeight">13dip</item>
         <item name="android:maxHeight">13dip</item>
         <item name="android:paddingLeft">15.0dip</item>

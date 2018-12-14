@@ -10,7 +10,7 @@ public class VedioItem extends BaseItem{
     private String info;
     private String create_time;
     private int id;
-    private String baseUrl = "http://39.96.24.179";
+    private String baseUrl = "http://";
 
     public VedioItem(JSONObject jsonObject) throws Exception {
         id = Integer.valueOf(jsonObject.getString("id")).intValue();
@@ -23,6 +23,7 @@ public class VedioItem extends BaseItem{
 
     public VedioItem(){
         vedio_link = "http://sign-resource.oss-cn-beijing.aliyuncs.com/%E5%A4%A7%E5%B8%85%E5%BA%9C-%E6%96%B9%E5%BD%A2%E9%BB%91%E6%A1%86.mp4";
+        //vedio_link = "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4";
         info = "大帅府的介绍。";
     }
 
