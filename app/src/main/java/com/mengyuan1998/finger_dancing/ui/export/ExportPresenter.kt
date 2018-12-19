@@ -81,7 +81,6 @@ class ExportPresenter(
                             }
                 } else {
                     dataSubscription?.dispose()
-
                 }
             } else {
                 view.showNotStreamingErrorMessage()
@@ -116,6 +115,8 @@ class ExportPresenter(
                         System.out.println("err happend " +  e.toString())
                     }
                 })
+
+        dataSubscription?.dispose()
 
     }
 

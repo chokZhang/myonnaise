@@ -1,14 +1,18 @@
 package com.mengyuan1998.finger_dancing.ui.scan
 
+import android.Manifest
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +24,7 @@ import com.mengyuan1998.finger_dancing.ui.model.Device
 import kotlinx.android.synthetic.main.layout_scan_device.*
 import javax.inject.Inject
 
+private const val REQUEST_ACCESS_COARSE_LOCATION = 1
 class ScanDeviceFragment : com.mengyuan1998.finger_dancing.BaseFragment<ScanDeviceContract.Presenter>(), ScanDeviceContract.View {
 
     companion object {
@@ -47,7 +52,12 @@ class ScanDeviceFragment : com.mengyuan1998.finger_dancing.BaseFragment<ScanDevi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        fab_scan.setOnClickListener { scanDevicePresenter.onScanToggleClicked() }
+        fab_scan.setOnClickListener {
+
+            requestPermission()
+
+            //scanDevicePresenter.onScanToggleClicked()
+        }
 
         listDeviceAdapter = DeviceAdapter(object : DeviceSelectedListener {
             override fun onDeviceSelected(v: View, position: Int) {
@@ -109,6 +119,34 @@ class ScanDeviceFragment : com.mengyuan1998.finger_dancing.BaseFragment<ScanDevi
     override fun navigateToControlDevice() {
         //(activity as MainActivity).navigateToPage(1)
     }
+
+    private fun requestPermission() {
+
+        context?.apply {
+            val hasPermission = (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            if(!hasPermission){
+                requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+                        REQUEST_ACCESS_COARSE_LOCATION)
+            }
+            else{
+                scanDevicePresenter.onScanToggleClicked()
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            REQUEST_ACCESS_COARSE_LOCATION -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    scanDevicePresenter.onScanToggleClicked()
+                } else {
+                    Toast.makeText(activity, getString(R.string.write_permission_denied_message), Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
 
     class DeviceAdapter(
             private val deviceSelectedListener: DeviceSelectedListener

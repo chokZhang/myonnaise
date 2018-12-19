@@ -68,7 +68,6 @@ dependencies {
     implementation files('libs/Sunflower.jar')
     implementation 'me.codeboy.android:align-text-view:2.3.2'
     implementation 'com.facebook.fresco:fresco:1.11.0'
-    implementation 'cn.jzvd:jiaozivideoplayer:6.1.2'
     implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
     implementation "com.android.support:support-v13:28.0.2"
     implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'

@@ -1,5 +1,6 @@
 package com.mengyuan1998.finger_dancing.adpter;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -15,14 +16,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.facebook.common.logging.LoggingDelegate;
 import com.mengyuan1998.finger_dancing.R;
 import com.mengyuan1998.finger_dancing.Utilities.info_rv_adapter_item.BaseItem;
 import com.mengyuan1998.finger_dancing.Utilities.widget.OnShowThumbnailListener;
 import com.mengyuan1998.finger_dancing.Utilities.widget.PlayStateParams;
 import com.mengyuan1998.finger_dancing.Utilities.widget.PlayerView;
 import com.mengyuan1998.finger_dancing.Utilities.widget.VideoijkBean;
-import com.mengyuan1998.finger_dancing.media.IRenderView;
-import com.mengyuan1998.finger_dancing.media.IjkVideoView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +30,6 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import cn.jzvd.JZVideoPlayerStandard;
 import wseemann.media.FFmpegMediaMetadataRetriever;
 
 public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -53,6 +52,7 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     Activity mActivity;
 
     Context context;
+
 
     public InfoRVAdapter(Activity activity, List<BaseItem> items){
         this.mActivity = activity;
@@ -167,11 +167,23 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         else if(holder instanceof UserVedioViewHolder){
             UserVedioViewHolder vedioViewHolder = (UserVedioViewHolder) holder;
 
-            vedioViewHolder.vedio_player.setUp(item.getUrl(), JZVideoPlayerStandard.SCREEN_WINDOW_NORMAL, "video");
-
-            if(null != item.getBitmap()){
-                vedioViewHolder.vedio_player.thumbImageView.setImageBitmap(item.getBitmap());
-            }
+            vedioViewHolder.mVideoPresent.showThumbnail(new OnShowThumbnailListener() {
+                @Override
+                public void onShowThumbnail(final ImageView ivThumbnail) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            final Bitmap bitmap = getBitmapFormUrl(item.getUrl(), position);
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ivThumbnail.setImageBitmap(bitmap);
+                                }
+                            });
+                        }
+                    }).start();
+                }
+            }).setPlaySource(item.getUrl());
 
             vedioViewHolder.text_info.setText("这是一个测试");
 
@@ -262,9 +274,8 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     class UserVedioViewHolder extends RecyclerView.ViewHolder{
-
+        PlayerView mVideoPresent;
         CommonView commonView = new CommonView();
-        JZVideoPlayerStandard vedio_player;
         TextView text_info;
         TextView praise_right_num;
         TextView share_right_num;
@@ -272,10 +283,29 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public UserVedioViewHolder(View view){
             super(view);
             InitCommonView(view, commonView);
-            vedio_player = view.findViewById(R.id.video);
+
             text_info = view.findViewById(R.id.text_info);
             praise_right_num = view.findViewById(R.id.share_right_num);
             share_right_num = view.findViewById(R.id.share_right_num);
+            mVideoPresent = new PlayerView(mActivity, view) {
+                @Override
+                public PlayerView toggleProcessDurationOrientation() {
+                    hideSteam(getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    return setProcessDurationOrientation(getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT ? PlayStateParams.PROCESS_PORTRAIT : PlayStateParams.PROCESS_LANDSCAPE);
+                }
+
+                @Override
+                public PlayerView setPlaySource(List<VideoijkBean> list) {
+                    return super.setPlaySource(list);
+                }
+            }
+                    .setTitle("什么")
+                    .setProcessDurationOrientation(PlayStateParams.PROCESS_PORTRAIT)
+                    .setScaleType(PlayStateParams.fillparent)
+                    .forbidTouch(false)
+                    .hideSteam(true)
+                    .hideHideTopBar(true)
+                    .hideCenterPlayer(false);
             Log.d(TAG, "VideoViewHolder: get there");
         }
     }
@@ -368,6 +398,12 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         Log.d(TAG, "addHeader: added");
         mList.add(0, new BaseItem());
         notifyItemInserted(0);
+    }
+
+    public void releaseHeader(){
+        Log.d(TAG, "releaseHeader: remove");
+        mList.remove(0);
+        notifyItemRemoved(0);
     }
 
     public void update(final int position, BaseItem item){

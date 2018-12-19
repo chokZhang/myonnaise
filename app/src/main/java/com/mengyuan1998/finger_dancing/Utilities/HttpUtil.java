@@ -25,7 +25,7 @@ public class HttpUtil {
     private static ConcurrentHashMap<String, List<Cookie>> cookieStore = new ConcurrentHashMap<>();
 
     private static OkHttpClient okHttpClient = new OkHttpClient.Builder()
-            .connectTimeout(10000, TimeUnit.MILLISECONDS)
+            .connectTimeout(10, TimeUnit.SECONDS)
             .readTimeout(100,TimeUnit.SECONDS)
             .writeTimeout(100, TimeUnit.SECONDS)
             .cookieJar(new CookieJar(){

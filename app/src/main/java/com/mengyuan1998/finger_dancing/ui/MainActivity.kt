@@ -99,9 +99,11 @@ open class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
     private fun requestPermission() {
         val hasPermission = (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-        ActivityCompat.requestPermissions(this,
-                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
-                1)
+        if(!hasPermission){
+            ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+                    1)
+        }
     }
 
     override fun onDestroy() {

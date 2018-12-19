@@ -1,22 +1,27 @@
 package com.mengyuan1998.finger_dancing.ui;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import cn.jzvd.JZVideoPlayer;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.RadioButton;
@@ -55,6 +60,20 @@ public class InfoActivity extends AppCompatActivity {
     //监听clearCheck()方法是否被调用
     private boolean fromClear;
 
+    private final int REQUEST_ALL_PERMISSION = 1;
+
+    private String[] permissions = new String[]{
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA,
+            Manifest.permission.MODIFY_AUDIO_SETTINGS,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.RECORD_AUDIO
+    };
+
+    private List<String> mPermissionList = new ArrayList<>();
+
 
     List<Integer> radioButtons = Arrays.asList(R.id.rb_community,
             R.id.rb_publish,
@@ -70,7 +89,9 @@ public class InfoActivity extends AppCompatActivity {
     //数组 存储Fragment
     Fragment[] mFragments;
     //当前Fragent的下标
-    private  int currentIndex;
+    private int currentIndex;
+    //当点击发布时，是否启动相机拍摄
+    private boolean shouldStartActivity = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,10 +103,11 @@ public class InfoActivity extends AppCompatActivity {
 
         mRgBottomMenu = findViewById(R.id.rg_bottom_menu);
 
-        publishFragmrnt.setInterface(new PublishFragmrnt.Fragment1CallBack() {
+        publishFragmrnt.setInterface(new PublishFragmrnt.OnPostListener() {
             @Override
             public void onPostDone() {
                 fromClear = true;
+                shouldStartActivity = true;
                 mRgBottomMenu.clearCheck();
 
                 mRgBottomMenu.check(R.id.rb_community);
@@ -93,9 +115,31 @@ public class InfoActivity extends AppCompatActivity {
                 communityFragment.scrollToTop();
 
             }
+
+            //线程中被调用
+            @Override
+            public void onFailure() {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "上传失败， 网络状态错误", Toast.LENGTH_SHORT).show();
+
+                        //取消communityFragment的header
+                        communityFragment.releaseHeader();
+                        communityFragment.scrollToTop();
+                    }
+                });
+            }
+
+            @Override
+            public void onSuccess() {
+                //TODO 上传成功后需要做的事情
+            }
         });
 
         InitImgSize();
+
+        requestPermission();
 
         //将Fragment加入数组
         mFragments = new Fragment[] {
@@ -133,36 +177,13 @@ public class InfoActivity extends AppCompatActivity {
                     case R.id.rb_publish:{
                         Log.d(TAG, "onCheckedChanged: get in");
 
-                        //存储视频的文件对象
-                        login();
-                        outputVedio = new File(getExternalCacheDir() + "/vedios", "output_vedio.mp4");
-                        try{
-                            if(outputVedio.exists()){
-                                outputVedio.delete();
-                            }
-                            if(!outputVedio.getParentFile().exists()){
-                                outputVedio.getParentFile().mkdir();
-                            }
-                            outputVedio.createNewFile();
-                        }catch (Exception e){
-                            Log.e(TAG, "onClick: err happend in takeVedio");
-                            e.printStackTrace();
+                        requestPermission();
+
+                        if(shouldStartActivity){
+                            startCameraActivity();
+                        }else{
+                            setIndexSelected(1);
                         }
-                        if(Build.VERSION.SDK_INT >= 24){
-
-                            Log.d(TAG, "onCheckedChanged: >= 24");
-
-                            vedioUri = FileProvider.getUriForFile(InfoActivity.this, "com.mengyuan1998.finger_dancing.provider", outputVedio);
-                        }
-                        else{
-                            Log.d(TAG, "onCheckedChanged: < 24");
-                            vedioUri = Uri.fromFile(outputVedio);
-                        }
-                        Intent intent = new Intent("android.media.action.VIDEO_CAPTURE");
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, vedioUri);
-                        startActivityForResult(intent, TAKE_VEDIO);
-
-
                         break;
                     }
 
@@ -178,6 +199,27 @@ public class InfoActivity extends AppCompatActivity {
         });
 
     }
+
+    public boolean requestPermission(){
+        //小于6.0不需要权限动态申请
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
+            return true;
+        }
+
+        for(int i = 0; i < permissions.length; i++){
+            if(ContextCompat.checkSelfPermission(InfoActivity.this, permissions[i]) != PackageManager.PERMISSION_GRANTED){
+                mPermissionList.add(permissions[i]);
+            }
+        }
+
+        if(mPermissionList.size() != 0){
+            String[] permissions = mPermissionList.toArray(new String[mPermissionList.size()]);
+            ActivityCompat.requestPermissions(InfoActivity.this, permissions, REQUEST_ALL_PERMISSION);
+            return false;
+        }
+        return true;
+    }
+
 
     @Override
     public void onResume(){
@@ -236,9 +278,11 @@ public class InfoActivity extends AppCompatActivity {
                     }).run();
                     communityFragment.addHeader();*/
                     setIndexSelected(1);
+                    shouldStartActivity = false;
                 }
                 else{
                     fromClear = true;
+                    shouldStartActivity = true;
                     mRgBottomMenu.clearCheck();
                     mRgBottomMenu.check(radioButtons.get(currentIndex));
 
@@ -304,6 +348,37 @@ public class InfoActivity extends AppCompatActivity {
         transaction.commitAllowingStateLoss();
         Log.d(TAG, "onSaveInstanceState: run");
         super.onSaveInstanceState(outState);
+    }
+
+    private void startCameraActivity(){
+        //存储视频的文件对象
+        login();
+        outputVedio = new File(getExternalCacheDir() + "/vedios", "output_vedio.mp4");
+        try{
+            if(outputVedio.exists()){
+                outputVedio.delete();
+            }
+            if(!outputVedio.getParentFile().exists()){
+                outputVedio.getParentFile().mkdir();
+            }
+            outputVedio.createNewFile();
+        }catch (Exception e){
+            Log.e(TAG, "onClick: err happend in takeVedio");
+            e.printStackTrace();
+        }
+        if(Build.VERSION.SDK_INT >= 24){
+
+            Log.d(TAG, "onCheckedChanged: >= 24");
+
+            vedioUri = FileProvider.getUriForFile(InfoActivity.this, "com.mengyuan1998.finger_dancing.provider", outputVedio);
+        }
+        else{
+            Log.d(TAG, "onCheckedChanged: < 24");
+            vedioUri = Uri.fromFile(outputVedio);
+        }
+        Intent intent = new Intent("android.media.action.VIDEO_CAPTURE");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, vedioUri);
+        startActivityForResult(intent, TAKE_VEDIO);
     }
 
     public void postFile(File file){
@@ -378,6 +453,32 @@ public class InfoActivity extends AppCompatActivity {
             }
         });
     }
+
+    // 用户权限 申请 的回调方法
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        boolean state = false;
+        if (requestCode == REQUEST_ALL_PERMISSION) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (grantResults.length > 0) {//安全写法，如果小于0，肯定会出错了
+                    for (int i = 0; i < grantResults.length; i++) {
+                        int grantResult = grantResults[i];
+                        switch (grantResult){
+                            case PackageManager.PERMISSION_GRANTED://同意授权0
+                                break;
+                            case PackageManager.PERMISSION_DENIED://拒绝授权-1
+                                state = true;
+                                break;
+                        }
+                    }
+                }
+            }
+            if(state){
+                Toast.makeText(this, "权限不足，可能会出现问题", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 
 
 }

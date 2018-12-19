@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.legacy.app.FragmentCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.iflytek.cloud.SpeechConstant
 import com.iflytek.cloud.SpeechRecognizer
@@ -21,6 +22,7 @@ import com.mengyuan1998.finger_dancing.R
 import com.mengyuan1998.finger_dancing.Utilities.MessageManager
 import com.mengyuan1998.finger_dancing.Utilities.SoftKeyBoardListener
 import com.mengyuan1998.finger_dancing.adpter.ConversationMessagesRVAdapter
+import com.mengyuan1998.finger_dancing.ui.button.VoiceRecordButton
 import kotlinx.android.synthetic.main.layout_export.*
 import java.io.File
 import java.io.FileOutputStream
@@ -29,6 +31,8 @@ import javax.inject.Inject
 
 
 private const val REQUEST_WRITE_EXTERNAL_CODE = 2
+
+private const val REQUEST_ALL_PERMISSION = 1
 
 class ExportFragment : com.mengyuan1998.finger_dancing.BaseFragment<ExportContract.Presenter>(), ExportContract.View {
 
@@ -108,7 +112,13 @@ class ExportFragment : com.mengyuan1998.finger_dancing.BaseFragment<ExportContra
         conversation_display_rv.adapter = adapter
         conversation_display_rv.layoutManager = LinearLayoutManager(activity)
 
-
+        recognize_img.setmPermissionListener(object : VoiceRecordButton.PermissionListener {
+            override fun requestPermission(permissions: Array<out String>?) {
+                permissions?.apply {
+                    requestPermissions(permissions, REQUEST_ALL_PERMISSION)
+                }
+            }
+        })
 
         send_conversation.setOnClickListener {
             var content = edit_conversation.text.toString();
@@ -195,6 +205,21 @@ class ExportFragment : com.mengyuan1998.finger_dancing.BaseFragment<ExportContra
                     fileContentToSave?.apply { writeToFile(this) }
                 } else {
                     Toast.makeText(activity, getString(R.string.write_permission_denied_message), Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            REQUEST_ALL_PERMISSION -> {
+                for (i in permissions.indices){
+                    var state : Boolean = false
+                    if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
+                        //以后是否禁止询问
+                        shouldShowRequestPermissionRationale(permissions[i])
+                        state = true
+                    }
+
+                    if(state){
+                        Toast.makeText(activity, "没有足够权限，可能会影响语音输入", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }

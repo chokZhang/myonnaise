@@ -1,12 +1,17 @@
 package com.mengyuan1998.finger_dancing.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +27,8 @@ import com.mengyuan1998.finger_dancing.R;
 import com.mengyuan1998.finger_dancing.Utilities.HttpUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -33,6 +40,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private EditText et_password;
     private Button login_button;
     private final String loginUrl = "http://39.96.24.179/login";
+    private final int REQUEST_ALL_PERMISSION = 0;
+
+    private String[] permissions = new String[]{
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA,
+            Manifest.permission.MODIFY_AUDIO_SETTINGS,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+    };
+
+    private List<String> mPermissionList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +64,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         WindowManager.LayoutParams localLayoutParams = getWindow().getAttributes();
         localLayoutParams.flags = (WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | localLayoutParams.flags);*/
 
-
+        requestPermission();
 
         //TODO 补全电话登陆的逻辑
 
@@ -79,6 +100,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 login(name, pass);
             }
             default: break;
+        }
+    }
+
+    public void requestPermission(){
+        //小于6.0不需要权限动态申请
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
+            return;
+        }
+
+        for(int i = 0; i < permissions.length; i++){
+            if(ContextCompat.checkSelfPermission(LoginActivity.this, permissions[i]) != PackageManager.PERMISSION_GRANTED){
+                mPermissionList.add(permissions[i]);
+            }
+        }
+
+        if(mPermissionList.size() != 0){
+            String[] permissions = mPermissionList.toArray(new String[mPermissionList.size()]);
+            ActivityCompat.requestPermissions(LoginActivity.this, permissions, REQUEST_ALL_PERMISSION);
         }
     }
 

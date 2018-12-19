@@ -1,8 +1,11 @@
 package com.mengyuan1998.finger_dancing.ui.button;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -17,7 +20,14 @@ import com.mengyuan1998.finger_dancing.R;
 import com.mengyuan1998.finger_dancing.Utilities.AudioRecorderConfiguration;
 import com.mengyuan1998.finger_dancing.Utilities.ExtAudioRecorder;
 import com.mengyuan1998.finger_dancing.Utilities.MessageManager;
+import com.mengyuan1998.finger_dancing.ui.LoginActivity;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import static android.content.ContentValues.TAG;
 
@@ -40,6 +50,24 @@ public class VoiceRecordButton extends AppCompatImageView {
     private boolean is_cancel = false;
     private Dialog recorder_dialog;
     private ImageView dialog_img;
+    private Context mContext;
+    private final int REQUEST_ALL_PERMISSION = 1;
+    private PermissionListener mPermissionListener;
+    //是否有权限足以使用
+    private boolean isReady = true;
+
+    private String[] permissions = new String[]{
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.MODIFY_AUDIO_SETTINGS,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.RECORD_AUDIO,
+    };
+
+    private List<String> mPermissionList = new ArrayList<>();
+
+
     @SuppressLint("HandlerLeak")
     private Handler recorder_ui_handler = new Handler() {
         @Override
@@ -85,10 +113,16 @@ public class VoiceRecordButton extends AppCompatImageView {
     }
     public VoiceRecordButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mContext = context;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        requestPermission();
+        if(!isReady){
+            Toast.makeText(mContext, "权限不足", Toast.LENGTH_SHORT).show();
+            return true;
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: // 按下按钮
                 if (recorder_state == RECORD_OFF) {
@@ -144,6 +178,25 @@ public class VoiceRecordButton extends AppCompatImageView {
         return true;
     }
 
+    public void requestPermission(){
+        //小于6.0不需要权限动态申请
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
+            return;
+        }
+
+        for(int i = 0; i < permissions.length; i++){
+            if(ContextCompat.checkSelfPermission(mContext, permissions[i]) != PackageManager.PERMISSION_GRANTED){
+                mPermissionList.add(permissions[i]);
+            }
+        }
+
+        if(mPermissionList.size() != 0){
+            String[] permissions = mPermissionList.toArray(new String[mPermissionList.size()]);
+            mPermissionListener.requestPermission(permissions);
+            isReady = false;
+        }
+    }
+
     private void updateVoiceDialog(boolean is_can_cancel) {
         if (recorder_dialog == null) {
             recorder_dialog = new Dialog(getContext(), R.style.Theme_AppCompat_Dialog);
@@ -184,5 +237,11 @@ public class VoiceRecordButton extends AppCompatImageView {
             recorder.release();
     }
 
+    public interface PermissionListener{
+        void requestPermission(String[] permissions);
+    }
 
+    public void setmPermissionListener(PermissionListener mPermissionListener) {
+        this.mPermissionListener = mPermissionListener;
+    }
 }

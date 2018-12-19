@@ -3,7 +3,6 @@ package com.mengyuan1998.finger_dancing.fragment;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -13,10 +12,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.mengyuan1998.finger_dancing.R;
-import com.mengyuan1998.finger_dancing.Utilities.GetImgUtils;
 import com.mengyuan1998.finger_dancing.Utilities.HttpUtil;
 import com.mengyuan1998.finger_dancing.Utilities.JsonUtils;
-import com.mengyuan1998.finger_dancing.Utilities.VedioAutoPlayer;
 import com.mengyuan1998.finger_dancing.Utilities.info_rv_adapter_item.BaseItem;
 import com.mengyuan1998.finger_dancing.Utilities.widget.OnShowThumbnailListener;
 import com.mengyuan1998.finger_dancing.Utilities.widget.PlayStateParams;
@@ -29,8 +26,6 @@ import java.util.List;
 
 
 import androidx.fragment.app.FragmentTransaction;
-import cn.jzvd.JZVideoPlayer;
-import cn.jzvd.JZVideoPlayerStandard;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -43,10 +38,8 @@ public class PublishFragmrnt extends BaseFragment {
     PlayerView vedio_player;
     TextView publish;
     EditText editText;
-    Fragment1CallBack callBack;
+    OnPostListener callBack;
     private final String uploadUrl = "http://39.96.24.179/upload";
-    //是否获取到视频的缩略图, 1代表成功， -1代表失败
-    private int saveThumbnailState;
     private static PublishFragmrnt instance = new PublishFragmrnt();
 
     public static PublishFragmrnt getInstance(){
@@ -103,18 +96,6 @@ public class PublishFragmrnt extends BaseFragment {
 
 
         vedio_player.setLoop(true);
-
-
-        /*new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Bitmap bitmap =  GetImgUtils.getLocalVideoThumbnail(file.getAbsolutePath());
-                if(null != bitmap){
-
-                }
-            }
-        }).start();*/
-
 
         publish.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,6 +156,7 @@ public class PublishFragmrnt extends BaseFragment {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.d(TAG, "onFailure: err");
+                callBack.onFailure();
                 e.printStackTrace();
             }
 
@@ -186,15 +168,19 @@ public class PublishFragmrnt extends BaseFragment {
                     Log.i(TAG, "result===" + result);
                     if(response.code() != 200){
                         Toast.makeText(getActivity(), "网络状态错误", Toast.LENGTH_SHORT).show();
+                        callBack.onFailure();
                     }
-                    try{
-                        BaseItem baseItem = JsonUtils.parseJSON(result);
-                        //只有一个元素
-                        if(null != baseItem){
-                            CommunityFragment.getInstance().update(0, baseItem);
+                    else{
+                        try{
+                            BaseItem baseItem = JsonUtils.parseJSON(result);
+                            //只有一个元素
+                            if(null != baseItem){
+                                CommunityFragment.getInstance().update(0, baseItem);
+                            }
+                            callBack.onSuccess();
+                        }catch (Exception e){
+                            e.printStackTrace();
                         }
-                    }catch (Exception e){
-                        e.printStackTrace();
                     }
                 }
             }
@@ -203,13 +189,18 @@ public class PublishFragmrnt extends BaseFragment {
 
 
 
-    public void setInterface(Fragment1CallBack callBack){
+    public void setInterface(OnPostListener callBack){
         this.callBack = callBack;
     }
 
-    public interface Fragment1CallBack{
+    //监听开始上传
+    public interface OnPostListener{
         public void onPostDone();
-    }
 
+        public void onFailure();
+
+        public void onSuccess();
+
+    }
 
 }

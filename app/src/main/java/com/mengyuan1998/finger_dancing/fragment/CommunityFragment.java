@@ -165,6 +165,12 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
         mAdapter.addHeader();
     }
 
+    //删除头部
+    public void releaseHeader(){
+        mAdapter.releaseHeader();
+    }
+
+    //更新
     public void update(int position, BaseItem item){
         Log.d(TAG, "update: ");
         mAdapter.update(position, item);
