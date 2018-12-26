@@ -1,7 +1,11 @@
 package com.mengyuan1998.finger_dancing.Utilities;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,6 +25,8 @@ import okhttp3.RequestBody;
 public class HttpUtil {
 
     private static final String TAG = "HttpUtil";
+
+    private static Handler mHandle = new Handler(Looper.getMainLooper());
 
     private static ConcurrentHashMap<String, List<Cookie>> cookieStore = new ConcurrentHashMap<>();
 
@@ -58,7 +64,7 @@ public class HttpUtil {
         //Log.i("huang","files[0].getName()=="+files[0].getName());
         //第一个参数要与Servlet中的一致
         builder.addFormDataPart("video",files[0].getName(), RequestBody.create(MediaType.parse("application/octet-stream"),files[0]));
-        //builder.addFormDataPart("img", files[1].getName(), RequestBody.create(MediaType.parse("application/octet-stream"),files[1]));
+        builder.addFormDataPart("img", files[1].getName(), RequestBody.create(MediaType.parse("application/octet-stream"),files[1]));
         builder.addFormDataPart("info", info);
         //builder.addFormDataPart("video", "abc");
 
@@ -83,12 +89,34 @@ public class HttpUtil {
         okHttpClient.newCall(request).enqueue(callback);
     }
 
+    public static void onFresh( String url,String action, okhttp3.Callback callback){
+
+        final Request request = new Request.Builder()
+                .url(url)
+                .get()//默认就是GET请求，可以不写
+                .build();
+        okHttpClient.newCall(request).enqueue(callback);
+    }
+
     public static void getInfoUpate(String url, okhttp3.Callback callback){
         final Request request = new Request.Builder()
                 .url(url)
                 .get()//默认就是GET请求，可以不写
                 .build();
         okHttpClient.newCall(request).enqueue(callback);
+    }
+
+    public static Handler getmHandle(){
+        return mHandle;
+    }
+
+    public static void showStateWrong(final Context context, final String state){
+        mHandle.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, state, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public interface ProgressListener {

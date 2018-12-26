@@ -9,20 +9,20 @@ public class VedioItem extends BaseItem{
     private String img_link;
     private String info;
     private String create_time;
-    private int id;
-    private String baseUrl = "http://";
+    //private String baseUrl = "http://";
 
     public VedioItem(JSONObject jsonObject) throws Exception {
-        id = Integer.valueOf(jsonObject.getString("id")).intValue();
+        id = jsonObject.getString("id");
         thumbs = Integer.valueOf(jsonObject.getString("thumbs")).intValue();
-        vedio_link = baseUrl + jsonObject.getString("video_link");
+        vedio_link = jsonObject.getString("video_link");
+        vedio_link = vedio_link.replaceAll("https", "http");
         img_link = jsonObject.getString("img_link");
         info = jsonObject.getString("info");
         create_time = jsonObject.getString("create_time");
     }
 
     public VedioItem(){
-        vedio_link = "http://sign-resource.oss-cn-beijing.aliyuncs.com/%E5%A4%A7%E5%B8%85%E5%BA%9C-%E6%96%B9%E5%BD%A2%E9%BB%91%E6%A1%86.mp4";
+        vedio_link = "http://sign-resource.oss-cn-beijing.aliyuncs.com/%E5%A4%A7%E5%B8%85%E5%BA%9C2%20%283%29.mp4?spm=5176.8466032.0.dopenurl.25691450dPvgc0&file=%E5%A4%A7%E5%B8%85%E5%BA%9C2%20%283%29.mp4";
         //vedio_link = "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4";
         info = "大帅府的介绍。";
     }
@@ -67,11 +67,11 @@ public class VedioItem extends BaseItem{
         this.create_time = create_time;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

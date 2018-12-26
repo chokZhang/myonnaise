@@ -159,6 +159,7 @@
             android:layout_width="match_parent"
             android:id="@+id/community_fragment_rv"
             tools:listitem="@layout/community_vedio_item"
+            android:overScrollMode="never"
             android:layout_height="match_parent"/>
     </LinearLayout>
 

@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 public class InfoActivity extends AppCompatActivity {
@@ -53,7 +54,7 @@ public class InfoActivity extends AppCompatActivity {
     public static final int TAKE_VEDIO = 1;
     public static final int GET_VEDIO = 2;
     private final String uploadUrl = "http://39.96.24.179/upload";
-    private final String loginUrl = "http://39.96.24.179/login";
+    private final String loginUrl = "http://39.96.24.179:8888/login";
     private Uri vedioUri;
     private CommunityFragment communityFragment = CommunityFragment.getInstance();
     private PublishFragmrnt publishFragmrnt = PublishFragmrnt.getInstance();
@@ -135,6 +136,15 @@ public class InfoActivity extends AppCompatActivity {
             public void onSuccess() {
                 //TODO 上传成功后需要做的事情
             }
+
+            @Override
+            public void onCancel() {
+                fromClear = true;
+                shouldStartActivity = true;
+                mRgBottomMenu.clearCheck();
+
+                mRgBottomMenu.check(R.id.rb_community);
+            }
         });
 
         InitImgSize();
@@ -153,10 +163,7 @@ public class InfoActivity extends AppCompatActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         //设置为默认界面 MainHomeFragment
         ft.add(R.id.main_content,mFragments[0]).commit();
-        
-        if(mFragments[0].isAdded()){
-            Log.d(TAG, "onCreate: added");
-        }
+
         
         //RadioGroup选中事件监听 改变fragment
         mRgBottomMenu.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -197,6 +204,8 @@ public class InfoActivity extends AppCompatActivity {
                 }
             }
         });
+
+        login();
 
     }
 
@@ -352,8 +361,9 @@ public class InfoActivity extends AppCompatActivity {
 
     private void startCameraActivity(){
         //存储视频的文件对象
-        login();
-        outputVedio = new File(getExternalCacheDir() + "/vedios", "output_vedio.mp4");
+        String videoName = getNowTime();
+        publishFragmrnt.setVideoName(videoName);
+        outputVedio = new File(getExternalCacheDir() + "/vedios", videoName);
         try{
             if(outputVedio.exists()){
                 outputVedio.delete();
@@ -477,6 +487,11 @@ public class InfoActivity extends AppCompatActivity {
                 Toast.makeText(this, "权限不足，可能会出现问题", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    public String getNowTime(){
+        Calendar calendar = Calendar.getInstance();
+        return "" + calendar.get(Calendar.YEAR) + "" + calendar.get(Calendar.MONTH) + "" + calendar.get(Calendar.DAY_OF_MONTH) + "" + calendar.get(Calendar.HOUR_OF_DAY) + "" + calendar.get(Calendar.MINUTE) + "" + calendar.get(Calendar.SECOND)+".mp4";
     }
 
 

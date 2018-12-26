@@ -3,6 +3,8 @@ package com.mengyuan1998.finger_dancing.fragment;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.os.AsyncTask;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -11,6 +13,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.signature.MediaStoreSignature;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.mengyuan1998.finger_dancing.R;
 import com.mengyuan1998.finger_dancing.Utilities.HttpUtil;
 import com.mengyuan1998.finger_dancing.Utilities.JsonUtils;
@@ -21,7 +28,11 @@ import com.mengyuan1998.finger_dancing.Utilities.widget.PlayerView;
 import com.mengyuan1998.finger_dancing.Utilities.widget.VideoijkBean;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 
@@ -38,7 +49,9 @@ public class PublishFragmrnt extends BaseFragment {
     PlayerView vedio_player;
     TextView publish;
     EditText editText;
+    TextView cancel;
     OnPostListener callBack;
+    private String videoName;
     private final String uploadUrl = "http://39.96.24.179/upload";
     private static PublishFragmrnt instance = new PublishFragmrnt();
 
@@ -54,13 +67,14 @@ public class PublishFragmrnt extends BaseFragment {
 
     @Override
     protected void initViews(Context context) {
-        final File file = new File(getActivity().getExternalCacheDir() + "/vedios", "output_vedio.mp4");
+        final File file = new File(getActivity().getExternalCacheDir() + "/vedios", videoName);
 
         Log.d(TAG, "initViews: " + file.getAbsolutePath());
 
         final String pathUrl = "file://" + file.getAbsolutePath();
 
         publish = findViewById(R.id.publish);
+        cancel =findViewById(R.id.cancel);
         editText = findViewById(R.id.talkSomething);
 
         vedio_player = new PlayerView(getActivity(), mRootView){
@@ -84,10 +98,18 @@ public class PublishFragmrnt extends BaseFragment {
                 .showThumbnail(new OnShowThumbnailListener() {
                     @Override
                     public void onShowThumbnail(ImageView ivThumbnail) {
-                        Glide.with(getActivity())
-                                .load(pathUrl)
+
+                        RequestOptions requestOptions = new RequestOptions()
                                 .placeholder(R.color.cl_default)
                                 .error(R.color.cl_default)
+                                .dontAnimate()
+                                .fallback(R.color.cl_default);
+
+
+
+                        Glide.with(getActivity())
+                                .load(pathUrl)
+                                .apply(requestOptions)
                                 .into(ivThumbnail);
 
                     }
@@ -101,18 +123,30 @@ public class PublishFragmrnt extends BaseFragment {
             @Override
             public void onClick(View v) {
                 final String info = editText.getText().toString();
-                new Thread(new Runnable() {
+                /*new Thread(new Runnable() {
                     @Override
                     public void run() {
                         postFile(file, info);
                     }
-                }).start();
+                }).start();*/
+
+                new GetImageCacheAsyncTask(getActivity(), file, info).execute(pathUrl);
                 CommunityFragment.getInstance().addHeader();
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.remove(instance);
                 ft.commit();
                 Log.d(TAG, "onClick: gone");
                 callBack.onPostDone();
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.remove(instance);
+                ft.commit();
+                callBack.onCancel();
             }
         });
     }
@@ -131,6 +165,7 @@ public class PublishFragmrnt extends BaseFragment {
 
     @Override
     public void onStop(){
+        vedio_player.pausePlay();
         super.onStop();
     }
 
@@ -140,9 +175,10 @@ public class PublishFragmrnt extends BaseFragment {
         vedio_player.onDestroy();
     }
 
-    public void postFile(File file, String info){
+    public void postFile(final File[] files, String info){
 
         //可以在这做一些逻辑处理，例如添加一些文件
+
 
 
         HttpUtil.postFile(uploadUrl, info, new HttpUtil.ProgressListener() {
@@ -153,6 +189,7 @@ public class PublishFragmrnt extends BaseFragment {
 
             }
         }, new Callback() {
+
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.d(TAG, "onFailure: err");
@@ -167,7 +204,7 @@ public class PublishFragmrnt extends BaseFragment {
                     String result = response.body().string();
                     Log.i(TAG, "result===" + result);
                     if(response.code() != 200){
-                        Toast.makeText(getActivity(), "网络状态错误", Toast.LENGTH_SHORT).show();
+                        //线程中调用
                         callBack.onFailure();
                     }
                     else{
@@ -177,6 +214,7 @@ public class PublishFragmrnt extends BaseFragment {
                             if(null != baseItem){
                                 CommunityFragment.getInstance().update(0, baseItem);
                             }
+                            files[0].delete();
                             callBack.onSuccess();
                         }catch (Exception e){
                             e.printStackTrace();
@@ -184,8 +222,10 @@ public class PublishFragmrnt extends BaseFragment {
                     }
                 }
             }
-        }, file);
+        }, files);
     }
+
+
 
 
 
@@ -201,6 +241,87 @@ public class PublishFragmrnt extends BaseFragment {
 
         public void onSuccess();
 
+        void onCancel();
+
     }
 
+    private class GetImageCacheAsyncTask extends AsyncTask<String, Void, File> {
+        private static final String TAG = "getImageCacheAsyncTask";
+        private final Context context;
+        private File videoFile;
+        private String info;
+        public boolean getImgState = false;
+
+        public GetImageCacheAsyncTask(Context context, File file, String info) {
+            this.context = context;
+            this.videoFile = file;
+            this.info = info;
+        }
+
+        @Override
+        protected File doInBackground(String... params) {
+            String imgUrl = params[0];
+            try {
+                getImgState = false;
+                return Glide.with(context)
+                        .load(imgUrl)
+                        .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                        .get();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(File result) {
+            if (result == null) {
+                Log.d(TAG, "onPostExecute: get Img failed");
+                return;
+            }
+            Log.d(TAG, "onPostExecute: file path: " + result.getAbsolutePath());
+
+            File imgFile = new File(getActivity().getExternalCacheDir() + "/vedios", "img.png");
+            try{
+                if(imgFile.exists()){
+                    imgFile.delete();
+                }
+                imgFile.createNewFile();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            copySdcardFile(result.getAbsolutePath(), imgFile.getAbsolutePath());
+            getImgState = true;
+            File[] files = new File[2];
+            files[0] = videoFile;
+            files[1] = imgFile;
+            postFile(files, info);
+
+        }
+    }
+
+    public static boolean copySdcardFile(String fromFile, String toFile) {
+
+        try {
+            InputStream fosfrom = new FileInputStream(fromFile);
+            OutputStream fosto = new FileOutputStream(toFile);
+            byte bt[] = new byte[1024];
+            int c;
+            while ((c = fosfrom.read(bt)) > 0) {
+                fosto.write(bt, 0, c);
+            }
+            fosfrom.close();
+            fosto.close();
+            return true;
+
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+
+
+    public void setVideoName(String videoName) {
+        this.videoName = videoName;
+    }
 }

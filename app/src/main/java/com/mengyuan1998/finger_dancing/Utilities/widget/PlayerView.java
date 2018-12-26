@@ -25,6 +25,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.mengyuan1998.finger_dancing.R;
 
 import java.util.ArrayList;
@@ -281,8 +282,6 @@ public class PlayerView {
             switch (msg.what) {
                 /**滑动完成，隐藏滑动提示的box*/
                 case MESSAGE_HIDE_CENTER_BOX:
-                    query.id(R.id.app_video_volume_box).gone();
-                    query.id(R.id.app_video_brightness_box).gone();
                     query.id(R.id.app_video_fastForward_box).gone();
                     break;
                 /**滑动完成，设置播放进度*/
@@ -360,7 +359,7 @@ public class PlayerView {
                 //setPlayerRotation();
             }*/ else if (v.getId() == R.id.app_video_fullscreen) {
                 /**视频全屏切换*/
-                toggleFullScreen();
+
             } else if (v.getId() == R.id.app_video_play || v.getId() == R.id.play_icon) {
                 /**视频播放和暂停*/
                 if (videoView.isPlaying()) {
@@ -487,7 +486,7 @@ public class PlayerView {
 
         ll_topbar = rootView.findViewById(R.id.app_video_top_box);
         ll_bottombar = rootView.findViewById(R.id.ll_bottom_bar);
-        iv_trumb = (ImageView) rootView.findViewById(R.id.iv_trumb);
+        iv_trumb =  rootView.findViewById(R.id.iv_trumb);
         iv_back = (ImageView) rootView.findViewById(R.id.app_video_finish);
         iv_menu = (ImageView) rootView.findViewById(R.id.app_video_menu);
         iv_bar_player = (ImageView) rootView.findViewById(R.id.app_video_play);
@@ -822,6 +821,8 @@ public class PlayerView {
      * 开始播放
      */
     public PlayerView startPlay() {
+        //播放时屏幕常亮
+        mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if(isLoop){
             videoView.setLooping(true);
         }
@@ -886,9 +887,13 @@ public class PlayerView {
      * 暂停播放
      */
     public PlayerView pausePlay() {
+        //不保持屏幕常亮
+        mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         status = PlayStateParams.STATE_PAUSED;
         getCurrentPosition();
         videoView.pause();
+        mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         return this;
     }
 
@@ -896,6 +901,8 @@ public class PlayerView {
      * 停止播放
      */
     public PlayerView stopPlay() {
+        //不保持屏幕常亮
+        mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         videoView.stopPlayback();
         isErrorStop = true;
         if (mHandler != null) {
@@ -1232,18 +1239,6 @@ public class PlayerView {
         return this;
     }
 
-    /**
-     * 全屏切换
-     */
-    public PlayerView toggleFullScreen() {
-        if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-            mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        } else {
-            mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
-        updateFullScreenButton();
-        return this;
-    }
 
     /**
      * 显示菜单设置
@@ -1682,66 +1677,7 @@ public class PlayerView {
         }
     }
 
-    /**
-     * 滑动改变声音大小
-     *
-     * @param percent
-     */
-    private void onVolumeSlide(float percent) {
-        if (volume == -1) {
-            volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-            if (volume < 0)
-                volume = 0;
-        }
-        int index = (int) (percent * mMaxVolume) + volume;
-        if (index > mMaxVolume)
-            index = mMaxVolume;
-        else if (index < 0)
-            index = 0;
 
-        // 变更声音
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, index, 0);
-
-        // 变更进度条
-        int i = (int) (index * 1.0 / mMaxVolume * 100);
-        String s = i + "%";
-        if (i == 0) {
-            s = "off";
-        }
-        // 显示
-        query.id(R.id.app_video_volume_icon).image(i == 0 ? R.drawable.simple_player_volume_off_white_36dp : R.drawable.simple_player_volume_up_white_36dp);
-        query.id(R.id.app_video_brightness_box).gone();
-        query.id(R.id.app_video_volume_box).visible();
-        query.id(R.id.app_video_volume_box).visible();
-        query.id(R.id.app_video_volume).text(s).visible();
-    }
-
-    /**
-     * 快进或者快退滑动改变进度
-     *
-     * @param percent
-     */
-    private void onProgressSlide(float percent) {
-        int position = videoView.getCurrentPosition();
-        long duration = videoView.getDuration();
-        long deltaMax = Math.min(100 * 1000, duration - position);
-        long delta = (long) (deltaMax * percent);
-        newPosition = delta + position;
-        if (newPosition > duration) {
-            newPosition = duration;
-        } else if (newPosition <= 0) {
-            newPosition = 0;
-            delta = -position;
-        }
-        int showDelta = (int) delta / 1000;
-        if (showDelta != 0) {
-            query.id(R.id.app_video_fastForward_box).visible();
-            String text = showDelta > 0 ? ("+" + showDelta) : "" + showDelta;
-            query.id(R.id.app_video_fastForward).text(text + "s");
-            query.id(R.id.app_video_fastForward_target).text(generateTime(newPosition) + "/");
-            query.id(R.id.app_video_fastForward_all).text(generateTime(duration));
-        }
-    }
 
 
 
@@ -1813,10 +1749,6 @@ public class PlayerView {
          */
         private boolean isDownTouch;
         /**
-         * 是否声音控制,默认为亮度控制，true为声音控制，false为亮度控制
-         */
-        private boolean isVolume;
-        /**
          * 是否横向滑动，默认为纵向滑动，true为横向滑动，false为纵向滑动
          */
         private boolean isLandscape;
@@ -1828,7 +1760,7 @@ public class PlayerView {
         public boolean onDoubleTap(MotionEvent e) {
             /**视频视窗双击事件*/
             if (!isForbidTouch && !isOnlyFullScreen && !isForbidDoulbeUp) {
-                toggleFullScreen();
+                //toggleFullScreen();
             }
             return true;
         }
@@ -1854,27 +1786,10 @@ public class PlayerView {
                 float deltaX = mOldX - e2.getX();
                 if (isDownTouch) {
                     isLandscape = Math.abs(distanceX) >= Math.abs(distanceY);
-                    isVolume = mOldX > screenWidthPixels * 0.5f;
                     isDownTouch = false;
                 }
 
-                if (isLandscape) {
-                    if (!isLive) {
-                        /**进度设置*/
-                        onProgressSlide(-deltaX / videoView.getWidth());
-                    }
-                } else {
-                    float percent = deltaY / videoView.getHeight();
-                    if (isVolume) {
-                        /**声音设置*/
-                        onVolumeSlide(percent);
-                    } else {
-                        /**亮度设置*/
-
-                    }
-
-
-                }
+                return false;
             }
             return super.onScroll(e1, e2, distanceX, distanceY);
         }

@@ -23,8 +23,10 @@ public class BaseItem implements Serializable {
     private boolean praise_state;
 
     private Bitmap bitmap = null;
-
+    //是否加载过图片
     private boolean getImgState;
+    //在数据库中的编号
+    public String id;
 
     public int getType() {
         return type;
@@ -104,5 +106,13 @@ public class BaseItem implements Serializable {
 
     public void setGetImgState(boolean getImgState) {
         this.getImgState = getImgState;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

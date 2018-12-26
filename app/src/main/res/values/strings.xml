@@ -67,7 +67,7 @@
     <string name="welcome_english">Welcome</string>
     <string name="welcome_chinese">欢迎使用双向手语交流系统</string>
     <string name="startCommunicate">开始交流</string>
-    <string name="voiceRecognition">长按语音识别</string>
+    <string name="voiceRecognition">社区</string>
     <string name="setting">设置</string>
     <string name="about">关于</string>
     <string name="to_return">返回</string>

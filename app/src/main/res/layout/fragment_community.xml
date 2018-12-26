@@ -19,6 +19,8 @@
             android:layout_marginTop="7dp"
             android:layout_width="13dp"
             android:layout_height="18dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:layout_marginStart="10dp"
             android:src="@drawable/return_button"/>
         <EditText
@@ -35,7 +37,7 @@
 
 
     <!--主要信息体-->
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    <!--<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:id="@+id/swipe_refresh"
@@ -45,7 +47,23 @@
             android:layout_width="match_parent"
             android:id="@+id/community_fragment_rv"
             tools:listitem="@layout/community_vedio_item"
+            android:overScrollMode="never"
             android:layout_height="match_parent"/>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <com.aspsine.irecyclerview.IRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/community_fragment_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:overScrollMode="never"
+            app:loadMoreEnabled="true"
+            app:loadMoreFooterLayout="@layout/layout_irecyclerview_load_more_footer"
+            app:refreshEnabled="true"
+            app:refreshHeaderLayout="@layout/layout_irecyclerview_refresh_header" />
+    </LinearLayout>
 
 </LinearLayout>

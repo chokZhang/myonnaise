@@ -75,6 +75,7 @@
             android:screenOrientation="portrait">
         </activity>
         <activity android:name=".ui.PublishActivity"></activity>
+
     </application>
 
 </manifest>
