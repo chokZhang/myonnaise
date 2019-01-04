@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.mengyuan1998.finger_dancing.R;
 import com.mengyuan1998.finger_dancing.Utilities.info_rv_adapter_item.BaseItem;
 import com.mengyuan1998.finger_dancing.adpter.InfoRVAdapter;
@@ -19,6 +20,11 @@ public class UserFragment extends BaseFragment {
     private RecyclerView mRecyclerView;
     private InfoRVAdapter mAdapter;
     private List<BaseItem> items = new ArrayList<>();
+    private static UserFragment instance = new UserFragment();
+
+    public static UserFragment getInstance(){
+        return instance;
+    }
 
     @Override
     protected int attachLayoutRes() {
@@ -43,6 +49,12 @@ public class UserFragment extends BaseFragment {
     }
 
     void InitImgSize(){
+        TextView nickname=(TextView) mRootView.findViewById(R.id.NickName);
+        SimpleDraweeView headUrl=(SimpleDraweeView) mRootView.findViewById(R.id.head_img);
+        String name=getArguments().get("name")+"";
+        String head=getArguments().get("head")+"";
+        nickname.setText(name);
+        headUrl.setImageURI(head);
         TextView contactUs = findViewById(R.id.contact_us);
         Drawable contactUs_drawable = getResources().getDrawable(R.drawable.contact);
         contactUs_drawable.setBounds(0, 0, 60, 60);

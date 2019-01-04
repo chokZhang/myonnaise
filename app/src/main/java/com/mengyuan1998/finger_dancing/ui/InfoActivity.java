@@ -13,8 +13,10 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -53,11 +55,14 @@ public class InfoActivity extends AppCompatActivity {
     private File outputVedio;
     public static final int TAKE_VEDIO = 1;
     public static final int GET_VEDIO = 2;
-    private final String uploadUrl = "http://39.96.24.179/upload";
-    private final String loginUrl = "http://39.96.24.179:8888/login";
+    private final String uploadUrl = "http://39.96.90.194/upload";
+    private final String loginUrl = "http://39.96.90.194:8888/login";
     private Uri vedioUri;
     private CommunityFragment communityFragment = CommunityFragment.getInstance();
     private PublishFragmrnt publishFragmrnt = PublishFragmrnt.getInstance();
+    private UserFragment userFragment = UserFragment.getInstance();
+    public static String[] thumbColumns = { MediaStore.Video.Thumbnails.DATA };
+    public static String[] mediaColumns = { MediaStore.Video.Media._ID };
     //监听clearCheck()方法是否被调用
     private boolean fromClear;
 
@@ -101,6 +106,16 @@ public class InfoActivity extends AppCompatActivity {
         //初始化Fresco（圆形头像需要）
         Fresco.initialize(this);
         setContentView(R.layout.activity_info);
+
+        //微信昵称和头像的传入
+        Intent intent=getIntent();
+        String name=intent.getStringExtra("name");
+        String head=intent.getStringExtra("head");
+        Bundle bundle=new Bundle();/*创建Bundle数据包*/
+        bundle.putString("name",name);
+        bundle.putString("head",head);
+        Log.d("blood","name is "+name);
+        Log.d("blood","head is "+head);
 
         mRgBottomMenu = findViewById(R.id.rg_bottom_menu);
 
@@ -157,8 +172,10 @@ public class InfoActivity extends AppCompatActivity {
                 communityFragment,
                 publishFragmrnt,
                 new MessageFragment(),
-                new UserFragment()
+                userFragment
         };
+        //传递微信头像和昵称
+        userFragment.setArguments(bundle);
         //开启事务
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         //设置为默认界面 MainHomeFragment
@@ -187,7 +204,8 @@ public class InfoActivity extends AppCompatActivity {
                         requestPermission();
 
                         if(shouldStartActivity){
-                            startCameraActivity();
+                            //startCameraActivity();
+                            openAlbum();
                         }else{
                             setIndexSelected(1);
                         }
@@ -296,44 +314,27 @@ public class InfoActivity extends AppCompatActivity {
                     mRgBottomMenu.check(radioButtons.get(currentIndex));
 
                 }
-                //break;
+                break;
             }
             case GET_VEDIO:{
 
-                /*Uri uri = data.getData();
-                String path = FileUtils.getFilePathByUri(getApplicationContext(),uri);
-                if(null == path){
-                    Log.d(TAG, "onActivityResult: path is null!!");
-                    break;
+
+                if(resultCode == RESULT_OK){
+                    Uri uri = data.getData();
+                    Log.d(TAG, "onActivityResult: uri: " + uri.toString());
+                    InfoActivity.getThumbnailPathForLocalFile(this, uri);
+                    setIndexSelected(1);
+                    shouldStartActivity = false;
                 }
-                File file = new File(path);
-                if (!file.exists()) {
-                    Log.d(TAG, "onActivityResult: file doesnt exist");
-                    break;
+                else{
+                    fromClear = true;
+                    shouldStartActivity = true;
+                    mRgBottomMenu.clearCheck();
+                    mRgBottomMenu.check(radioButtons.get(currentIndex));
+
                 }
-                *//*HttpUtil.postFile(uploadUrl, new HttpUtil.ProgressListener() {
-                    @Override
-                    public void onProgress(long currentBytes, long contentLength, boolean done) {
-                        Log.i(TAG, "currentBytes==" + currentBytes + "==contentLength==" + contentLength + "==done==" + done);
 
-
-                    }
-                }, new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        if (response != null) {
-                            String result = response.body().string();
-                            Log.i(TAG, "result===" + result);
-                        }
-                    }
-                }, outputVedio);*//*
-                postFile(file);
-                break;*/
+                break;
             }
             default: break;
         }
@@ -359,6 +360,7 @@ public class InfoActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
     }
 
+    //调用系统相机拍照
     private void startCameraActivity(){
         //存储视频的文件对象
         String videoName = getNowTime();
@@ -390,6 +392,15 @@ public class InfoActivity extends AppCompatActivity {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, vedioUri);
         startActivityForResult(intent, TAKE_VEDIO);
     }
+
+    //打开相册
+    public void openAlbum(){
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+        intent.setDataAndType(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, "video/*");
+        startActivityForResult(intent, GET_VEDIO);
+    }
+
+
 
     public void postFile(File file){
 
@@ -487,6 +498,52 @@ public class InfoActivity extends AppCompatActivity {
                 Toast.makeText(this, "权限不足，可能会出现问题", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    //获取视频缩略图地址
+    public static String getThumbnailPathForLocalFile(Activity context,
+                                                      Uri fileUri) {
+
+        long fileId = getFileId(context, fileUri);
+
+        MediaStore.Video.Thumbnails.getThumbnail(context.getContentResolver(),
+                fileId, MediaStore.Video.Thumbnails.MICRO_KIND, null);
+
+        Cursor thumbCursor = null;
+        try {
+
+            thumbCursor = context.getContentResolver().query(
+                    MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI,
+                    thumbColumns, MediaStore.Video.Thumbnails.VIDEO_ID + " = "
+                            + fileId, null, null);
+
+            if (thumbCursor.moveToFirst()) {
+                String thumbPath = thumbCursor.getString(thumbCursor
+                        .getColumnIndex(MediaStore.Video.Thumbnails.DATA));
+                Log.d(TAG, "getThumbnailPathForLocalFile: path: " + thumbPath);
+                return thumbPath;
+            }
+
+        } finally {
+        }
+
+        return null;
+    }
+    //获取视频id
+    public static long getFileId(Activity context, Uri fileUri) {
+
+        Cursor cursor = context.getContentResolver().query(fileUri, mediaColumns, null, null,
+                null);
+
+        if (cursor.moveToFirst()) {
+            int columnIndex = cursor
+                    .getColumnIndexOrThrow(MediaStore.Video.Media._ID);
+            int id = cursor.getInt(columnIndex);
+
+            return id;
+        }
+
+        return 0;
     }
 
     public String getNowTime(){

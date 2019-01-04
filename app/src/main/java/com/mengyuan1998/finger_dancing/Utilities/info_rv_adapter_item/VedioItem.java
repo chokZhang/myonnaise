@@ -83,6 +83,10 @@ public class VedioItem extends BaseItem{
     public int getPraise_num(){
         return thumbs;
     }
+    @Override
+    public void setPraise_num(int praise_num) {
+        this.thumbs = praise_num;
+    }
     public int getType() {
         return 0;
     }

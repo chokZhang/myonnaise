@@ -21,7 +21,7 @@ public class BaseItem implements Serializable {
     private int praise_num;
     //表示是否对此条信息点赞
     private boolean praise_state;
-
+    private int share_num;
     private Bitmap bitmap = null;
     //是否加载过图片
     private boolean getImgState;
@@ -114,5 +114,13 @@ public class BaseItem implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getShare_num() {
+        return share_num;
+    }
+
+    public void setShare_num(int share_num) {
+        this.share_num = share_num;
     }
 }

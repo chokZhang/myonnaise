@@ -29,10 +29,15 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     private Button button_about;
     private Context mContext;
     private SharedPreferences mSharedPreferences;
+    private String name;
+    private String head;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent2=getIntent();
+        name=intent2.getStringExtra("name");
+        head=intent2.getStringExtra("head");
         //如果没有登录需跳转到登陆页面
         mContext = getApplicationContext();
         mSharedPreferences = mContext.getSharedPreferences("test", Context.MODE_PRIVATE);
@@ -99,6 +104,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 //切换到语音识别界面
                 Log.d(TAG, "onClick: click voiceRecognize");
                 Intent intent = new Intent(WelcomeActivity.this, InfoActivity.class);
+                intent.putExtra("name",name);
+                intent.putExtra("head",head);
                 startActivity(intent);
                 break;
             }

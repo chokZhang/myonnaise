@@ -3,6 +3,7 @@ package com.mengyuan1998.finger_dancing.fragment;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Looper;
 import android.util.Log;
@@ -52,7 +53,9 @@ public class PublishFragmrnt extends BaseFragment {
     TextView cancel;
     OnPostListener callBack;
     private String videoName;
-    private final String uploadUrl = "http://39.96.24.179/upload";
+    private String videoThumbnailPath;
+    private Uri videoUri;
+    private final String uploadUrl = "http://39.96.90.194/upload";
     private static PublishFragmrnt instance = new PublishFragmrnt();
 
     public static PublishFragmrnt getInstance(){
@@ -260,7 +263,7 @@ public class PublishFragmrnt extends BaseFragment {
 
         @Override
         protected File doInBackground(String... params) {
-            String imgUrl = params[0];
+            /*String imgUrl = params[0];
             try {
                 getImgState = false;
                 return Glide.with(context)
@@ -270,7 +273,12 @@ public class PublishFragmrnt extends BaseFragment {
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
+            }*/
+            if(videoThumbnailPath != null){
+                File file = new File(videoThumbnailPath);
+                return file;
             }
+            return null;
         }
 
         @Override
@@ -281,7 +289,7 @@ public class PublishFragmrnt extends BaseFragment {
             }
             Log.d(TAG, "onPostExecute: file path: " + result.getAbsolutePath());
 
-            File imgFile = new File(getActivity().getExternalCacheDir() + "/vedios", "img.png");
+            /*File imgFile = new File(getActivity().getExternalCacheDir() + "/vedios", "img.png");
             try{
                 if(imgFile.exists()){
                     imgFile.delete();
@@ -290,11 +298,11 @@ public class PublishFragmrnt extends BaseFragment {
             }catch (Exception e){
                 e.printStackTrace();
             }
-            copySdcardFile(result.getAbsolutePath(), imgFile.getAbsolutePath());
+            copySdcardFile(result.getAbsolutePath(), imgFile.getAbsolutePath());*/
             getImgState = true;
             File[] files = new File[2];
             files[0] = videoFile;
-            files[1] = imgFile;
+            files[1] = result;
             postFile(files, info);
 
         }
@@ -323,5 +331,21 @@ public class PublishFragmrnt extends BaseFragment {
 
     public void setVideoName(String videoName) {
         this.videoName = videoName;
+    }
+
+    public String getVideoThumbnailPath() {
+        return videoThumbnailPath;
+    }
+
+    public void setVideoThumbnailPath(String videoThumbnailPath) {
+        this.videoThumbnailPath = videoThumbnailPath;
+    }
+
+    public Uri getVideoUri() {
+        return videoUri;
+    }
+
+    public void setVideoUri(Uri videoUri) {
+        this.videoUri = videoUri;
     }
 }

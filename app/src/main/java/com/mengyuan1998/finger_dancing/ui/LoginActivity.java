@@ -25,6 +25,10 @@ import android.widget.Toast;
 
 import com.mengyuan1998.finger_dancing.R;
 import com.mengyuan1998.finger_dancing.Utilities.HttpUtil;
+import com.mengyuan1998.finger_dancing.base.Config;
+import com.tencent.mm.opensdk.modelmsg.SendAuth;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,8 +42,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private ImageView toWeChat;
     private EditText et_account;
     private EditText et_password;
-    private Button login_button;
-    private final String loginUrl = "http://39.96.24.179/login";
+    private Button tologin;
+    private final String loginUrl = "http://39.96.90.194/login";
+    private IWXAPI api;
     private final int REQUEST_ALL_PERMISSION = 0;
 
     private String[] permissions = new String[]{
@@ -71,14 +76,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //微信登陆
         weChatLogin = findViewById(R.id.login_wechat);
         toWeChat = findViewById(R.id.to_login_wechat);
-        login_button = findViewById(R.id.login_button);
+        tologin = findViewById(R.id.login_button);
         et_account = findViewById(R.id.et_account);
         et_password = findViewById(R.id.et_password);
 
         //注册监听器
         weChatLogin.setOnClickListener(this);
         toWeChat.setOnClickListener(this);
-        login_button.setOnClickListener(this);
+        tologin.setOnClickListener(this);
     }
 
     @Override
@@ -86,8 +91,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         switch (view.getId()){
             case R.id.to_login_wechat :
             case R.id.login_wechat : {
-                //TODO 微信登陆
-
+                // 微信登陆
+                api = WXAPIFactory.createWXAPI(this, Config.APP_ID_WX,true);
+                //将应用的appid注册到微信
+                api.registerApp(Config.APP_ID_WX);
+                SendAuth.Req req = new SendAuth.Req();
+                req.scope = "snsapi_userinfo";
+//                req.scope = "snsapi_login";//提示 scope参数错误，或者没有scope权限
+                req.state = "wechat_sdk_微信登录";
+                api.sendReq(req);
                 break;
             }
             case R.id.login_button : {

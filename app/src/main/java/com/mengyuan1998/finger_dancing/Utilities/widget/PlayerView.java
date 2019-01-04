@@ -374,6 +374,7 @@ public class PlayerView {
                         /**ijkplayer内部的监听没有回调，只能手动修改状态*/
                         status = PlayStateParams.STATE_PREPARING;
                         hideStatusUI();
+                        Log.d(TAG, "onClick: zhang hideStatusUI in pauseOrPlay");
                     }
                 }
                 updatePausePlay();
@@ -392,12 +393,14 @@ public class PlayerView {
                 /**使用移动网络提示继续播放*/
                 isGNetWork = false;
                 hideStatusUI();
+                Log.d(TAG, "onClick: zhang hideStatusUI in app_video_netTie_icon");
                 startPlay();
                 updatePausePlay();
             } else if (v.getId() == R.id.app_video_replay_icon) {
                 /**重新播放*/
                 status = PlayStateParams.STATE_ERROR;
                 hideStatusUI();
+                Log.d(TAG, "onClick: zhang hideStatusUI in app_video_replay_icon");
                 startPlay();
                 videoView.seekTo(0);
                 updatePausePlay();
@@ -839,6 +842,7 @@ public class PlayerView {
             }
         }
         hideStatusUI();
+        Log.d(TAG, "startPlay: zhang hideStatusUI in startPlay");
         if (isGNetWork && (NetworkUtils.getNetworkType(mContext) == 4 || NetworkUtils.getNetworkType(mContext) == 5 || NetworkUtils.getNetworkType(mContext) == 6)) {
             query.id(R.id.app_video_netTie).visible();
         } else {
@@ -848,6 +852,7 @@ public class PlayerView {
             } else {
                 if (playerSupport) {
                     query.id(R.id.app_video_loading).visible();
+                    Log.d(TAG, "startPlay: zhang visible in startPlay");
                     videoView.start();
                 } else {
                     showStatus(mActivity.getResources().getString(R.string.not_support));
@@ -1376,6 +1381,7 @@ public class PlayerView {
             status = PlayStateParams.STATE_PREPARING;
             /**视频缓冲*/
             hideStatusUI();
+            Log.d(TAG, "statusChange: zhang hideStatusUI in statusChange + newStatus: " + newStatus);
             query.id(R.id.app_video_loading).visible();
         } else if (newStatus == PlayStateParams.MEDIA_INFO_VIDEO_RENDERING_START
                 || newStatus == PlayStateParams.STATE_PLAYING
@@ -1393,6 +1399,7 @@ public class PlayerView {
                 @Override
                 public void run() {
                     hideStatusUI();
+                    Log.d(TAG, "run: zhang hideStatusUI in statusChange + postDelayed ");
                     /**显示控制bar*/
                     isShowControlPanl = false;
                     if (!isForbidTouch) {
@@ -1443,6 +1450,7 @@ public class PlayerView {
                     //query.id(R.id.app_video_freeTie).visible();
                 } else {
                     hideStatusUI();
+                    Log.d(TAG, "statusChange: zhang hideStatusUI in statusChange + newStatus: " + newStatus);
                     if (isLive) {
                         showStatus(mActivity.getResources().getString(R.string.small_problem));
                     } else {
@@ -1539,8 +1547,11 @@ public class PlayerView {
         query.id(R.id.app_video_replay).gone();
         query.id(R.id.app_video_netTie).gone();
         //query.id(R.id.app_video_freeTie).gone();
-        if(videoView.isPlaying())
+        if(videoView.isPlaying()){
             query.id(R.id.app_video_loading).gone();
+            Log.d(TAG, "hideStatusUI: zhang gone in hide");
+        }
+            
         if (onControlPanelVisibilityChangeListener != null) {
             onControlPanelVisibilityChangeListener.change(false);
         }
@@ -1555,6 +1566,7 @@ public class PlayerView {
             ll_bottombar.setVisibility(View.GONE);
         }
         hideStatusUI();
+        Log.d(TAG, "hideAll: zhang hideStatusUI in hideAll");
     }
 
     /**
@@ -1662,7 +1674,6 @@ public class PlayerView {
         } else {
             iv_bar_player.setImageResource(R.drawable.simple_player_arrow_white_24dp);
             iv_player.setImageResource(R.drawable.simple_player_center_play);
-            query.id(R.id.app_video_loading).gone();
         }
     }
 

@@ -31,15 +31,11 @@
         android:layout_marginBottom="15dp"
         android:orientation="horizontal">
 
-        <ImageView
-            android:clickable="true"
-            android:focusable="true"
+        <com.mengyuan1998.finger_dancing.my_view.thumbUplib
             android:id="@+id/praise"
-            android:layout_marginStart="20dp"
-            android:background="@drawable/praise_selector"
-            android:layout_width="23dp"
-            android:layout_height="21dp"
-
+            android:layout_marginStart="15dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             />
 
         <TextView

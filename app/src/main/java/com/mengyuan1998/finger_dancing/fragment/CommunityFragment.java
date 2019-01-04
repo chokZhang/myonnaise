@@ -236,14 +236,14 @@ public class CommunityFragment extends BaseFragment {
     }
 
     public void upFresh(){
-        String url = "http://39.96.24.179:8888/fresh?mAction=upFreshInCommunity&flag=" + upFreshFlag;
+        String url = "http://39.96.90.194:8888/fresh?mAction=upFreshInCommunity&flag=" + upFreshFlag;
         mAction = "upFreshInCommunity";
         HttpUtil.onFresh(url, mAction, freshCallBack);
 
     }
 
     public void downFresh(){
-        String url = "http://39.96.24.179:8888/fresh?mAction=downFreshInCommunity&flag=" + downFreshFlag;
+        String url = "http://39.96.90.194:8888/fresh?mAction=downFreshInCommunity&flag=" + downFreshFlag;
         mAction = "downFreshInCommunity";
         for(int i = 1; i <= 100000; i++){
 

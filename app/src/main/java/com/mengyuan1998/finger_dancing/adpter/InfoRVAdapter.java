@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
@@ -25,6 +26,14 @@ import com.mengyuan1998.finger_dancing.Utilities.widget.OnShowThumbnailListener;
 import com.mengyuan1998.finger_dancing.Utilities.widget.PlayStateParams;
 import com.mengyuan1998.finger_dancing.Utilities.widget.PlayerView;
 import com.mengyuan1998.finger_dancing.Utilities.widget.VideoijkBean;
+import com.mengyuan1998.finger_dancing.base.Config;
+import com.mengyuan1998.finger_dancing.my_view.thumbUplib;
+import com.mengyuan1998.finger_dancing.util.DialogUtils;
+import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.opensdk.modelmsg.WXVideoObject;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,6 +63,12 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     Activity mActivity;
 
     Context context;
+
+    static public int flag=0;
+
+    //分享内容
+    private IWXAPI api;
+    //分享内容变量结束
 
 
     public InfoRVAdapter(Activity activity, List<BaseItem> items){
@@ -157,7 +172,27 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 }
 
             }
-            videoViewHolder.user_name.setText(item.getUser_name());
+            videoViewHolder.commonView.share.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("fuckItem sharebefore ",String.valueOf(flag));
+                    shareit(item.getUrl());
+                }
+            });
+            videoViewHolder.commonView.praise.setOnThumbUp(new thumbUplib.OnThumbUp() {
+                @Override
+                public void like(boolean like) {
+                    if (like) {
+                        item.setPraise_num(item.getPraise_num()+1);
+                        Log.d("fuckItem community ",String .valueOf(item.getPraise_num()));
+                        videoViewHolder.praise_num.setText(item.getPraise_num() + " 次点赞");
+                    } else {
+                        item.setPraise_num(item.getPraise_num()-1);
+                        Log.d("fuckItem community ",String .valueOf(item.getPraise_num()));
+                        videoViewHolder.praise_num.setText(item.getPraise_num() + " 次点赞");
+                    }
+                }
+            });
             videoViewHolder.praise_num.setText(item.getPraise_num() + " 次点赞");
 
             Log.d(TAG, "onBindViewHolder: url is " + item.getUrl());
@@ -165,9 +200,34 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             videoViewHolder.mVideoPresent.setPlaySource(item.getUrl());
             videoViewHolder.text_info.setText(item.getInfo_text());
+            videoViewHolder.user_name.setText(item.getUser_name());
         }
         else if(holder instanceof UserVedioViewHolder){
             final UserVedioViewHolder vedioViewHolder = (UserVedioViewHolder) holder;
+            vedioViewHolder.commonView.share.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("fuckItem before flag",String.valueOf(flag));
+                    item.setShare_num(item.getShare_num()+flag);
+                    Log.d("fuckItem before num",String.valueOf(item.getShare_num()));
+                    vedioViewHolder.share_right_num.setText(String.valueOf(item.getShare_num()));
+                    shareit(item.getUrl());
+                }
+            });
+
+            vedioViewHolder.commonView.praise.setOnThumbUp(new thumbUplib.OnThumbUp() {
+                @Override
+                public void like(boolean like) {
+                    if (like) {
+                        item.setPraise_num(item.getPraise_num()+1);
+                        vedioViewHolder.praise_right_num.setText(String.valueOf(item.getPraise_num()));
+                    } else {
+                        item.setPraise_num(item.getPraise_num()-1);
+                        vedioViewHolder.praise_right_num.setText(String.valueOf(item.getPraise_num()));
+                    }
+                }
+            });
+            vedioViewHolder.praise_right_num.setText(String.valueOf(item.getPraise_num()));
 
             vedioViewHolder.mVideoPresent.showThumbnail(new OnShowThumbnailListener() {
                 @Override
@@ -341,7 +401,7 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     class CommonView{
 
-        ImageView praise;
+        thumbUplib praise;
         ImageView share;
 
     }
@@ -450,6 +510,64 @@ public class InfoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         vedioPresent.pausePlay();
         vedioPresent = null;
     }
+
+    //微信分享内容
+    private void initWx() {
+        api = WXAPIFactory.createWXAPI(context, Config.APP_ID_WX,true);
+        // 将该app注册到微信
+        api.registerApp(Config.APP_ID_WX);
+    }
+    private void shareit(String Url)
+    {
+        flag=0;
+        initWx();
+        Activity activity = (Activity) context;
+        String content=Url;
+        DialogUtils.showSharedDialog(activity, content, new DialogUtils.SharedListener() {
+            @Override
+            public void sharedToWXFriend(String content) {
+                sendToWeiXin("微信分享",content,"我是微信分享",BitmapFactory.decodeResource(context.getResources(),R.mipmap.ic_launcher),0);
+                Log.d("fuckItem aftershare ",String.valueOf(flag));
+            }
+
+            @Override
+            public void sharedToWXFriendCircle(String content) {
+                sendToWeiXin("微信分享",content,"我是微信分享",BitmapFactory.decodeResource(context.getResources(),R.mipmap.ic_launcher),1);
+            }
+
+            @Override
+            public void sharedToWXCollect(String content) {
+                sendToWeiXin("微信分享",content,"我是微信分享",BitmapFactory.decodeResource(context.getResources(),R.mipmap.ic_launcher),2);
+            }
+        });
+    }
+    public void sendToWeiXin(String title, String openUrl, String description, Bitmap icon, int requestCode) {
+        //初始化一个WXVideoObject，填写url
+        WXVideoObject video = new WXVideoObject();
+        video.videoUrl =openUrl;
+        //用 WXVideoObject 对象初始化一个 WXMediaMessage 对象
+        WXMediaMessage msg = new WXMediaMessage(video);
+        msg.title =title;
+        msg.description =description;
+        msg.setThumbImage(icon);
+        /*//初始化一个WXWebpageObject对象，填写url
+        WXWebpageObject webpage = new WXWebpageObject();
+        webpage.webpageUrl = openUrl;
+        //Y用WXWebpageObject对象初始化一个WXMediaMessage对象，填写标题、描述
+        WXMediaMessage msg = new WXMediaMessage(webpage);
+        msg.title = title;//网页标题
+        msg.description = description;//网页描述
+        msg.setThumbImage(icon);
+        //构建一个Req
+        */
+        SendMessageToWX.Req req = new SendMessageToWX.Req();
+        req.transaction = "supplier";
+        req.message = msg;
+        req.scene = requestCode;
+        api.sendReq(req);
+        flag++;
+    }
+
 
     public List<BaseItem> getmList() {
         return mList;
