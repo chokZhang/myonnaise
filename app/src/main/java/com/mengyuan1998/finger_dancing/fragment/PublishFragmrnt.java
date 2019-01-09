@@ -3,8 +3,11 @@ package com.mengyuan1998.finger_dancing.fragment;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
@@ -27,6 +30,7 @@ import com.mengyuan1998.finger_dancing.Utilities.widget.OnShowThumbnailListener;
 import com.mengyuan1998.finger_dancing.Utilities.widget.PlayStateParams;
 import com.mengyuan1998.finger_dancing.Utilities.widget.PlayerView;
 import com.mengyuan1998.finger_dancing.Utilities.widget.VideoijkBean;
+import com.mengyuan1998.finger_dancing.ui.InfoActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,6 +41,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentTransaction;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -53,10 +58,13 @@ public class PublishFragmrnt extends BaseFragment {
     TextView cancel;
     OnPostListener callBack;
     private String videoName;
+    private String videoAbsPath;
     private String videoThumbnailPath;
     private Uri videoUri;
-    private final String uploadUrl = "http://39.96.90.194/upload";
+    private final String uploadUrl = "http://39.96.90.194:8888/upload";
     private static PublishFragmrnt instance = new PublishFragmrnt();
+    private boolean publish_state = false;
+    private boolean cancel_state = false;
 
     public static PublishFragmrnt getInstance(){
         return instance;
@@ -70,11 +78,15 @@ public class PublishFragmrnt extends BaseFragment {
 
     @Override
     protected void initViews(Context context) {
-        final File file = new File(getActivity().getExternalCacheDir() + "/vedios", videoName);
+        /*final File file = new File(getActivity().getExternalCacheDir() + "/vedios", videoName);
 
-        Log.d(TAG, "initViews: " + file.getAbsolutePath());
+        Log.d(TAG, "initViews: " + file.getAbsolutePath());*/
 
-        final String pathUrl = "file://" + file.getAbsolutePath();
+        publish_state = true;
+        cancel_state = true;
+
+        final String pathUrl = "file://" + videoAbsPath;
+        final File file = new File(videoAbsPath);
 
         publish = findViewById(R.id.publish);
         cancel =findViewById(R.id.cancel);
@@ -102,29 +114,39 @@ public class PublishFragmrnt extends BaseFragment {
                     @Override
                     public void onShowThumbnail(ImageView ivThumbnail) {
 
-                        RequestOptions requestOptions = new RequestOptions()
-                                .placeholder(R.color.cl_default)
-                                .error(R.color.cl_default)
-                                .dontAnimate()
-                                .fallback(R.color.cl_default);
+                        if(videoThumbnailPath != null){
+                            Bitmap bmp= BitmapFactory.decodeFile(videoThumbnailPath);
+                            ivThumbnail.setImageBitmap(bmp);
+                            Log.d(TAG, "onShowThumbnail: setThumbnail");
+                        }
+                        else{
+                            //Glide加载本地视频缩略图
+                            RequestOptions requestOptions = new RequestOptions()
+                                    .placeholder(R.color.cl_default)
+                                    .error(R.color.cl_default)
+                                    .dontAnimate()
+                                    .fallback(R.color.cl_default);
 
 
 
-                        Glide.with(getActivity())
-                                .load(pathUrl)
-                                .apply(requestOptions)
-                                .into(ivThumbnail);
+                            Glide.with(getActivity())
+                                    .load(pathUrl)
+                                    .apply(requestOptions)
+                                    .into(ivThumbnail);
+                        }
 
                     }
                 })
                 .setPlaySource(pathUrl);
 
 
-        vedio_player.setLoop(true);
-
         publish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!publish_state){
+                    return;
+                }
+                publish_state = false;
                 final String info = editText.getText().toString();
                 /*new Thread(new Runnable() {
                     @Override
@@ -146,6 +168,10 @@ public class PublishFragmrnt extends BaseFragment {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!cancel_state){
+                    return;
+                }
+                cancel_state = false;
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.remove(instance);
                 ft.commit();
@@ -347,5 +373,13 @@ public class PublishFragmrnt extends BaseFragment {
 
     public void setVideoUri(Uri videoUri) {
         this.videoUri = videoUri;
+    }
+
+    public String getVideoAbsPath() {
+        return videoAbsPath;
+    }
+
+    public void setVideoAbsPath(String videoAbsPath) {
+        this.videoAbsPath = videoAbsPath;
     }
 }

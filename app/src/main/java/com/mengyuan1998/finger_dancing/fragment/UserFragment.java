@@ -2,6 +2,8 @@ package com.mengyuan1998.finger_dancing.fragment;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -20,6 +22,7 @@ public class UserFragment extends BaseFragment {
     private RecyclerView mRecyclerView;
     private InfoRVAdapter mAdapter;
     private List<BaseItem> items = new ArrayList<>();
+    private ImageView return_button;
     private static UserFragment instance = new UserFragment();
 
     public static UserFragment getInstance(){
@@ -34,6 +37,15 @@ public class UserFragment extends BaseFragment {
     @Override
     protected void initViews(Context context) {
         mRecyclerView = findViewById(R.id.community_fragment_rv);
+        return_button = findViewById(R.id.community_fragment_return);
+
+        return_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().finish();
+            }
+        });
+
         //设置LayoutManager
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(RecyclerView.VERTICAL);

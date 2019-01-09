@@ -14,11 +14,14 @@ import okhttp3.Response;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,8 +29,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -53,9 +58,10 @@ public class InfoActivity extends AppCompatActivity {
 
     private static final String TAG = "InfoActivity";
     private File outputVedio;
+    public String videoAbsPath = null;
     public static final int TAKE_VEDIO = 1;
     public static final int GET_VEDIO = 2;
-    private final String uploadUrl = "http://39.96.90.194/upload";
+    private final String uploadUrl = "http://39.96.24.179/upload";
     private final String loginUrl = "http://39.96.90.194:8888/login";
     private Uri vedioUri;
     private CommunityFragment communityFragment = CommunityFragment.getInstance();
@@ -205,7 +211,34 @@ public class InfoActivity extends AppCompatActivity {
 
                         if(shouldStartActivity){
                             //startCameraActivity();
-                            openAlbum();
+                            //openAlbum();
+                            final AlertDialog centerDialog = new AlertDialog.Builder(InfoActivity.this).create();
+                            final View view = getLayoutInflater().inflate(R.layout.dialog_center, null);
+                            centerDialog.setView(view);
+
+                            TextView TakeVideo = view.findViewById(R.id.take_video);
+                            TextView GetVideo = view.findViewById(R.id.get_video);
+
+                            //拍照
+                            TakeVideo.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    startCameraActivity();
+                                    centerDialog.cancel();
+                                }
+                            });
+
+                            //从相册获取
+                            GetVideo.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    openAlbum();
+                                    centerDialog.cancel();
+                                }
+                            });
+
+                            centerDialog.show();
+
                         }else{
                             setIndexSelected(1);
                         }
@@ -304,6 +337,10 @@ public class InfoActivity extends AppCompatActivity {
                         }
                     }).run();
                     communityFragment.addHeader();*/
+                    String thumbnailPath = getVideoInfo(data);
+                    if(thumbnailPath != null){
+                        publishFragmrnt.setVideoThumbnailPath(thumbnailPath);
+                    }
                     setIndexSelected(1);
                     shouldStartActivity = false;
                 }
@@ -320,11 +357,17 @@ public class InfoActivity extends AppCompatActivity {
 
 
                 if(resultCode == RESULT_OK){
-                    Uri uri = data.getData();
+                    String thumbnailPath = getVideoInfo(data);
+                    if(thumbnailPath != null){
+                        publishFragmrnt.setVideoThumbnailPath(thumbnailPath);
+                    }
+                    setIndexSelected(1);
+                    shouldStartActivity = false;
+                    /*Uri uri = data.getData();
                     Log.d(TAG, "onActivityResult: uri: " + uri.toString());
                     InfoActivity.getThumbnailPathForLocalFile(this, uri);
                     setIndexSelected(1);
-                    shouldStartActivity = false;
+                    shouldStartActivity = false;*/
                 }
                 else{
                     fromClear = true;
@@ -363,9 +406,10 @@ public class InfoActivity extends AppCompatActivity {
     //调用系统相机拍照
     private void startCameraActivity(){
         //存储视频的文件对象
-        String videoName = getNowTime();
-        publishFragmrnt.setVideoName(videoName);
-        outputVedio = new File(getExternalCacheDir() + "/vedios", videoName);
+        //String videoName = getNowTime();
+        //publishFragmrnt.setVideoName("videoTemp.mp4");
+        outputVedio = new File(getExternalCacheDir() + "/vedios", "videoTemp.mp4");
+        publishFragmrnt.setVideoAbsPath(outputVedio.getAbsolutePath());
         try{
             if(outputVedio.exists()){
                 outputVedio.delete();
@@ -396,7 +440,7 @@ public class InfoActivity extends AppCompatActivity {
     //打开相册
     public void openAlbum(){
         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
-        intent.setDataAndType(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, "video/*");
+        //intent.setDataAndType(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, "video/*");
         startActivityForResult(intent, GET_VEDIO);
     }
 
@@ -500,14 +544,13 @@ public class InfoActivity extends AppCompatActivity {
         }
     }
 
-    //获取视频缩略图地址
+    /*//获取视频缩略图地址
     public static String getThumbnailPathForLocalFile(Activity context,
                                                       Uri fileUri) {
 
         long fileId = getFileId(context, fileUri);
 
-        MediaStore.Video.Thumbnails.getThumbnail(context.getContentResolver(),
-                fileId, MediaStore.Video.Thumbnails.MICRO_KIND, null);
+
 
         Cursor thumbCursor = null;
         try {
@@ -522,6 +565,9 @@ public class InfoActivity extends AppCompatActivity {
                         .getColumnIndex(MediaStore.Video.Thumbnails.DATA));
                 Log.d(TAG, "getThumbnailPathForLocalFile: path: " + thumbPath);
                 return thumbPath;
+            }
+            else{
+                Log.d(TAG, "getThumbnailPathForLocalFile: not");
             }
 
         } finally {
@@ -544,11 +590,78 @@ public class InfoActivity extends AppCompatActivity {
         }
 
         return 0;
-    }
+    }*/
 
     public String getNowTime(){
         Calendar calendar = Calendar.getInstance();
         return "" + calendar.get(Calendar.YEAR) + "" + calendar.get(Calendar.MONTH) + "" + calendar.get(Calendar.DAY_OF_MONTH) + "" + calendar.get(Calendar.HOUR_OF_DAY) + "" + calendar.get(Calendar.MINUTE) + "" + calendar.get(Calendar.SECOND)+".mp4";
+    }
+
+    //返回视频的缩略图
+    public String getVideoInfo(Intent data){
+        Uri uri = data.getData();
+        ContentResolver cr = this.getContentResolver();
+        /** 数据库查询操作。
+         * 第一个参数 uri：为要查询的数据库+表的名称。
+         * 第二个参数 projection ： 要查询的列。
+         * 第三个参数 selection ： 查询的条件，相当于SQL where。
+         * 第三个参数 selectionArgs ： 查询条件的参数，相当于 ？。
+         * 第四个参数 sortOrder ： 结果排序。
+         */
+        Cursor cursor = cr.query(uri, null, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                // 视频ID:MediaStore.Audio.Media._ID
+                String videoPath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));
+
+                Log.d(TAG, "getVideoInfo: videoPath: " + videoPath);
+                publishFragmrnt.setVideoAbsPath(videoPath);
+                String selection = MediaStore.Video.Media.DATA +"=?";
+                String[] selectionArgs = new String[]{
+                        videoPath
+                };
+
+                /*Cursor newCursor0 = cr.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
+
+                if(newCursor0.moveToFirst()){
+                    String path = newCursor0.getString(newCursor0.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));
+                    Log.d(TAG, "getVideoInfo: path: " + path);
+                }*/
+
+                Cursor newCursor = cr.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, selection, selectionArgs, null);
+
+                if(newCursor != null){
+                    if(newCursor.moveToFirst()){
+                        int videoId = newCursor.getInt(newCursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID));
+                        Log.d(TAG, "getVideoInfo: " + videoId);
+
+                        selection = MediaStore.Video.Thumbnails.VIDEO_ID +"=?";
+                        selectionArgs = new String[]{
+                                videoId+""
+                        };
+                        Cursor thumbCursor = cr.query(MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI, null, selection, selectionArgs, null);
+
+                        if(thumbCursor != null){
+                            if(thumbCursor.moveToFirst()){
+                                String path = thumbCursor.getString(thumbCursor.getColumnIndexOrThrow(MediaStore.Video.Thumbnails.DATA));
+                                Log.d(TAG, "getVideoInfo: path: " + path);
+                                thumbCursor.close();
+                                return path;
+                            }
+                            thumbCursor.close();
+                        }
+                    }
+
+                    newCursor.close();
+                }
+
+
+            }
+            cursor.close();
+        }
+
+        Log.d(TAG, "getVideoInfo: zhang path is null");
+        return null;
     }
 
 

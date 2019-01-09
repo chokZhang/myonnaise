@@ -64,7 +64,9 @@ public class HttpUtil {
         //Log.i("huang","files[0].getName()=="+files[0].getName());
         //第一个参数要与Servlet中的一致
         builder.addFormDataPart("video",files[0].getName(), RequestBody.create(MediaType.parse("application/octet-stream"),files[0]));
-        builder.addFormDataPart("img", files[1].getName(), RequestBody.create(MediaType.parse("application/octet-stream"),files[1]));
+        if(files.length > 1){
+            builder.addFormDataPart("img", files[1].getName(), RequestBody.create(MediaType.parse("application/octet-stream"),files[1]));
+        }
         builder.addFormDataPart("info", info);
         //builder.addFormDataPart("video", "abc");
 

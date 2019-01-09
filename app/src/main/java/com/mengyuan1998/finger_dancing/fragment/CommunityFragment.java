@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 
@@ -41,6 +42,7 @@ public class CommunityFragment extends BaseFragment {
     private static final String TAG = "CommunityFragment";
     private IRecyclerView mRecyclerView;
     private InfoRVAdapter mAdapter;
+    private ImageView return_button;
     private List<BaseItem> items = new ArrayList<>();
     private static CommunityFragment fragment = new CommunityFragment();
     private boolean freshed = false;
@@ -66,6 +68,14 @@ public class CommunityFragment extends BaseFragment {
     @Override
     protected void initViews(Context context) {
         mRecyclerView = findViewById(R.id.community_fragment_rv);
+        return_button = findViewById(R.id.community_fragment_return);
+
+        return_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().finish();
+            }
+        });
         /*//初始化SwipeRefreshLayout
         swiper = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         //为SwipeRefreshLayout设置监听事件
